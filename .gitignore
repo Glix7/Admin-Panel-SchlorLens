@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# Build Artifacts
+dist/
+build/
+coverage/
+
+# Environment Variables & Secrets
+.env
+.env.*
+!.env.example
+
+# Runtime & Active Data
+data/sessions.json
+*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.log
+
+# Editor & OS Artifacts
+.DS_Store
+Thumbs.db
+.idea/
+.aistudio/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

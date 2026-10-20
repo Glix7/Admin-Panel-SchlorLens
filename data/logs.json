@@ -1,0 +1,932 @@
+[
+  {
+    "id": "log-sb6h9vf",
+    "timestamp": "2026-10-20T11:47:06.062Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "LOGIN",
+    "summary": "Authenticated with ADMIN role."
+  },
+  {
+    "id": "log-a7brxdf",
+    "timestamp": "2026-10-20T11:46:54.908Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "DELETE",
+    "record_id": "opp-admin-test-1792496814899",
+    "summary": "Expunged record: \"Authorized Admin Grant in Quantum Comput...\""
+  },
+  {
+    "id": "log-erkfrgr",
+    "timestamp": "2026-10-20T11:46:54.905Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "UPDATE",
+    "record_id": "opp-admin-test-1792496814899",
+    "summary": "Updated 1 field(s) for \"Authorized Admin Grant in Quantum C...\"",
+    "changed_fields": [
+      "funding_amount_note"
+    ]
+  },
+  {
+    "id": "log-ug3v22y",
+    "timestamp": "2026-10-20T11:46:54.902Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "CREATE",
+    "record_id": "opp-admin-test-1792496814899",
+    "summary": "Curated new opportunity: \"Authorized Admin Grant in Quantum Comput...\" (Germany)"
+  },
+  {
+    "id": "log-grv7zow",
+    "timestamp": "2026-10-20T11:46:54.895Z",
+    "actor": "nobody@university.edu",
+    "role": "viewer",
+    "action": "FAILED_LOGIN",
+    "summary": "Failed login attempt for nonexistent or invalid email"
+  },
+  {
+    "id": "log-kthf25e",
+    "timestamp": "2026-10-20T11:46:54.894Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "FAILED_LOGIN",
+    "summary": "Invalid passphrase entered"
+  },
+  {
+    "id": "log-dvf1d1k",
+    "timestamp": "2026-10-20T11:46:54.789Z",
+    "actor": "viewer@scholarlens.edu",
+    "role": "viewer",
+    "action": "LOGIN",
+    "summary": "Authenticated with VIEWER role."
+  },
+  {
+    "id": "log-dje50np",
+    "timestamp": "2026-10-20T11:46:54.681Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "LOGIN",
+    "summary": "Authenticated with ADMIN role."
+  },
+  {
+    "id": "log-8a1x4jo",
+    "timestamp": "2026-10-20T11:32:55.108Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "DELETE",
+    "record_id": "opp-admin-test-1792495975099",
+    "summary": "Expunged record: \"Authorized Admin Grant in Quantum Comput...\""
+  },
+  {
+    "id": "log-xy72dvn",
+    "timestamp": "2026-10-20T11:32:55.106Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "UPDATE",
+    "record_id": "opp-admin-test-1792495975099",
+    "summary": "Updated 1 field(s) for \"Authorized Admin Grant in Quantum C...\"",
+    "changed_fields": [
+      "funding_amount_note"
+    ]
+  },
+  {
+    "id": "log-k70ok34",
+    "timestamp": "2026-10-20T11:32:55.103Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "CREATE",
+    "record_id": "opp-admin-test-1792495975099",
+    "summary": "Curated new opportunity: \"Authorized Admin Grant in Quantum Comput...\" (Germany)"
+  },
+  {
+    "id": "log-65y3v2d",
+    "timestamp": "2026-10-20T11:32:55.096Z",
+    "actor": "nobody@university.edu",
+    "role": "viewer",
+    "action": "FAILED_LOGIN",
+    "summary": "Failed login attempt for nonexistent or invalid email"
+  },
+  {
+    "id": "log-vkp1q2g",
+    "timestamp": "2026-10-20T11:32:55.095Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "FAILED_LOGIN",
+    "summary": "Invalid passphrase entered"
+  },
+  {
+    "id": "log-w9k7gwi",
+    "timestamp": "2026-10-20T11:32:55.000Z",
+    "actor": "viewer@scholarlens.edu",
+    "role": "viewer",
+    "action": "LOGIN",
+    "summary": "Authenticated with VIEWER role."
+  },
+  {
+    "id": "log-vwrwo4m",
+    "timestamp": "2026-10-20T11:32:54.906Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "LOGIN",
+    "summary": "Authenticated with ADMIN role."
+  },
+  {
+    "id": "log-7hn2rrk",
+    "timestamp": "2026-10-19T18:02:45.347Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "LOGOUT",
+    "summary": "Session terminated by user."
+  },
+  {
+    "id": "log-xnjq7o7",
+    "timestamp": "2026-10-19T18:02:29.752Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "FAILED_LOGIN",
+    "summary": "Invalid passphrase entered"
+  },
+  {
+    "id": "log-zxz3fi1",
+    "timestamp": "2026-10-19T18:02:25.236Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "LOGIN",
+    "summary": "Authenticated with ADMIN role."
+  },
+  {
+    "id": "log-965cats",
+    "timestamp": "2026-10-19T18:02:05.758Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "DELETE",
+    "record_id": "opp-admin-test-1792432925750",
+    "summary": "Expunged record: \"Authorized Admin Grant in Quantum Comput...\""
+  },
+  {
+    "id": "log-76n3anq",
+    "timestamp": "2026-10-19T18:02:05.755Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "UPDATE",
+    "record_id": "opp-admin-test-1792432925750",
+    "summary": "Updated 1 field(s) for \"Authorized Admin Grant in Quantum C...\"",
+    "changed_fields": [
+      "funding_amount_note"
+    ]
+  },
+  {
+    "id": "log-vz97msz",
+    "timestamp": "2026-10-19T18:02:05.753Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "CREATE",
+    "record_id": "opp-admin-test-1792432925750",
+    "summary": "Curated new opportunity: \"Authorized Admin Grant in Quantum Comput...\" (Germany)"
+  },
+  {
+    "id": "log-z4p0v8v",
+    "timestamp": "2026-10-19T18:02:05.748Z",
+    "actor": "nobody@university.edu",
+    "role": "viewer",
+    "action": "FAILED_LOGIN",
+    "summary": "Failed login attempt for nonexistent or invalid email"
+  },
+  {
+    "id": "log-35duv7z",
+    "timestamp": "2026-10-19T18:02:05.747Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "FAILED_LOGIN",
+    "summary": "Invalid passphrase entered"
+  },
+  {
+    "id": "log-svst4fv",
+    "timestamp": "2026-10-19T18:02:05.646Z",
+    "actor": "viewer@scholarlens.edu",
+    "role": "viewer",
+    "action": "LOGIN",
+    "summary": "Authenticated with VIEWER role."
+  },
+  {
+    "id": "log-nbgp0an",
+    "timestamp": "2026-10-19T18:02:05.556Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "LOGIN",
+    "summary": "Authenticated with ADMIN role."
+  },
+  {
+    "id": "log-v6et2e9",
+    "timestamp": "2026-10-19T17:26:27.413Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "DELETE",
+    "record_id": "opp-lt-999",
+    "summary": "Expunged record: \"MIT-India Quantum Computing Master Fello...\""
+  },
+  {
+    "id": "log-anzw5a2",
+    "timestamp": "2026-10-19T17:26:08.900Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "CREATE",
+    "record_id": "opp-lt-999",
+    "summary": "Curated new opportunity: \"MIT-India Quantum Computing Master Fello...\" (United States)"
+  },
+  {
+    "id": "log-khintes",
+    "timestamp": "2026-10-19T17:26:02.161Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "LOGIN",
+    "summary": "Authenticated with ADMIN role."
+  },
+  {
+    "id": "log-n6vz113",
+    "timestamp": "2026-10-19T17:16:44.354Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "FAILED_LOGIN",
+    "summary": "Invalid passphrase entered"
+  },
+  {
+    "id": "log-cdu7bo6",
+    "timestamp": "2026-10-19T17:13:41.571Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "DELETE",
+    "record_id": "opp-admin-test-1792430021564",
+    "summary": "Expunged record: \"Authorized Admin Grant in Quantum Comput...\""
+  },
+  {
+    "id": "log-efqpkch",
+    "timestamp": "2026-10-19T17:13:41.569Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "UPDATE",
+    "record_id": "opp-admin-test-1792430021564",
+    "summary": "Updated 1 field(s) for \"Authorized Admin Grant in Quantum C...\"",
+    "changed_fields": [
+      "funding_amount_note"
+    ]
+  },
+  {
+    "id": "log-3ns4cer",
+    "timestamp": "2026-10-19T17:13:41.567Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "CREATE",
+    "record_id": "opp-admin-test-1792430021564",
+    "summary": "Curated new opportunity: \"Authorized Admin Grant in Quantum Comput...\" (Germany)"
+  },
+  {
+    "id": "log-am2j2u8",
+    "timestamp": "2026-10-19T17:13:41.561Z",
+    "actor": "nobody@university.edu",
+    "role": "viewer",
+    "action": "FAILED_LOGIN",
+    "summary": "Failed login attempt for nonexistent or invalid email"
+  },
+  {
+    "id": "log-rm4j1fl",
+    "timestamp": "2026-10-19T17:13:41.560Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "FAILED_LOGIN",
+    "summary": "Invalid passphrase entered"
+  },
+  {
+    "id": "log-gktc3zy",
+    "timestamp": "2026-10-19T17:13:41.456Z",
+    "actor": "viewer@scholarlens.edu",
+    "role": "viewer",
+    "action": "LOGIN",
+    "summary": "Authenticated with VIEWER role."
+  },
+  {
+    "id": "log-4du9xia",
+    "timestamp": "2026-10-19T17:13:41.366Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "LOGIN",
+    "summary": "Authenticated with ADMIN role."
+  },
+  {
+    "id": "log-lopfr2b",
+    "timestamp": "2026-10-19T17:05:42.794Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "LOGOUT",
+    "summary": "Session terminated by user."
+  },
+  {
+    "id": "log-58alnhd",
+    "timestamp": "2026-10-19T17:05:38.267Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "LOGIN",
+    "summary": "Authenticated with ADMIN role."
+  },
+  {
+    "id": "log-tcjdzvs",
+    "timestamp": "2026-10-19T17:04:55.593Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "DELETE",
+    "record_id": "opp-admin-test-1792429495585",
+    "summary": "Expunged record: \"Authorized Admin Grant in Quantum Comput...\""
+  },
+  {
+    "id": "log-przhqdy",
+    "timestamp": "2026-10-19T17:04:55.590Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "UPDATE",
+    "record_id": "opp-admin-test-1792429495585",
+    "summary": "Updated 1 field(s) for \"Authorized Admin Grant in Quantum C...\"",
+    "changed_fields": [
+      "funding_amount_note"
+    ]
+  },
+  {
+    "id": "log-gzv8z6e",
+    "timestamp": "2026-10-19T17:04:55.588Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "CREATE",
+    "record_id": "opp-admin-test-1792429495585",
+    "summary": "Curated new opportunity: \"Authorized Admin Grant in Quantum Comput...\" (Germany)"
+  },
+  {
+    "id": "log-l72b46w",
+    "timestamp": "2026-10-19T17:04:55.582Z",
+    "actor": "nobody@university.edu",
+    "role": "viewer",
+    "action": "FAILED_LOGIN",
+    "summary": "Failed login attempt for nonexistent or invalid email"
+  },
+  {
+    "id": "log-3evxdkm",
+    "timestamp": "2026-10-19T17:04:55.581Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "FAILED_LOGIN",
+    "summary": "Invalid passphrase entered"
+  },
+  {
+    "id": "log-2ay6q4c",
+    "timestamp": "2026-10-19T17:04:55.476Z",
+    "actor": "viewer@scholarlens.edu",
+    "role": "viewer",
+    "action": "LOGIN",
+    "summary": "Authenticated with VIEWER role."
+  },
+  {
+    "id": "log-s1r4a0r",
+    "timestamp": "2026-10-19T17:04:55.385Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "LOGIN",
+    "summary": "Authenticated with ADMIN role."
+  },
+  {
+    "id": "log-knop1f7",
+    "timestamp": "2026-10-19T16:57:42.986Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "DELETE",
+    "record_id": "opp-admin-test-1792429062978",
+    "summary": "Expunged record: \"Authorized Admin Grant in Quantum Comput...\""
+  },
+  {
+    "id": "log-8a2zvof",
+    "timestamp": "2026-10-19T16:57:42.983Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "UPDATE",
+    "record_id": "opp-admin-test-1792429062978",
+    "summary": "Updated 1 field(s) for \"Authorized Admin Grant in Quantum C...\"",
+    "changed_fields": [
+      "funding_amount_note"
+    ]
+  },
+  {
+    "id": "log-gfpicne",
+    "timestamp": "2026-10-19T16:57:42.981Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "CREATE",
+    "record_id": "opp-admin-test-1792429062978",
+    "summary": "Curated new opportunity: \"Authorized Admin Grant in Quantum Comput...\" (Germany)"
+  },
+  {
+    "id": "log-mclklvr",
+    "timestamp": "2026-10-19T16:57:42.974Z",
+    "actor": "nobody@university.edu",
+    "role": "viewer",
+    "action": "FAILED_LOGIN",
+    "summary": "Failed login attempt for nonexistent or invalid email"
+  },
+  {
+    "id": "log-r8bil6a",
+    "timestamp": "2026-10-19T16:57:42.974Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "FAILED_LOGIN",
+    "summary": "Invalid passphrase entered"
+  },
+  {
+    "id": "log-v638oaj",
+    "timestamp": "2026-10-19T16:57:42.846Z",
+    "actor": "viewer@scholarlens.edu",
+    "role": "viewer",
+    "action": "LOGIN",
+    "summary": "Authenticated with VIEWER role."
+  },
+  {
+    "id": "log-j7i1h6v",
+    "timestamp": "2026-10-19T16:57:42.725Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "LOGIN",
+    "summary": "Authenticated with ADMIN role."
+  },
+  {
+    "id": "log-lx94hhy",
+    "timestamp": "2026-10-19T16:55:21.364Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "DELETE",
+    "record_id": "opp-admin-test-1792428921356",
+    "summary": "Expunged record: \"Authorized Admin Grant in Quantum Comput...\""
+  },
+  {
+    "id": "log-8aqyvqn",
+    "timestamp": "2026-10-19T16:55:21.361Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "UPDATE",
+    "record_id": "opp-admin-test-1792428921356",
+    "summary": "Updated 1 field(s) for \"Authorized Admin Grant in Quantum C...\"",
+    "changed_fields": [
+      "funding_amount_note"
+    ]
+  },
+  {
+    "id": "log-oq37j6l",
+    "timestamp": "2026-10-19T16:55:21.359Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "CREATE",
+    "record_id": "opp-admin-test-1792428921356",
+    "summary": "Curated new opportunity: \"Authorized Admin Grant in Quantum Comput...\" (Germany)"
+  },
+  {
+    "id": "log-drpb22z",
+    "timestamp": "2026-10-19T16:55:21.353Z",
+    "actor": "nobody@university.edu",
+    "role": "viewer",
+    "action": "FAILED_LOGIN",
+    "summary": "Failed login attempt for nonexistent or invalid email"
+  },
+  {
+    "id": "log-lzz1jbn",
+    "timestamp": "2026-10-19T16:55:21.353Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "FAILED_LOGIN",
+    "summary": "Invalid passphrase entered"
+  },
+  {
+    "id": "log-mt6s8hg",
+    "timestamp": "2026-10-19T16:55:21.249Z",
+    "actor": "viewer@scholarlens.edu",
+    "role": "viewer",
+    "action": "LOGIN",
+    "summary": "Authenticated with VIEWER role."
+  },
+  {
+    "id": "log-kvv2htl",
+    "timestamp": "2026-10-19T16:55:21.157Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "LOGIN",
+    "summary": "Authenticated with ADMIN role."
+  },
+  {
+    "id": "log-zpkwzb0",
+    "timestamp": "2026-10-19T16:54:57.761Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "DELETE",
+    "record_id": "opp-verify-e2e",
+    "summary": "Expunged record: \"End-to-End Verification Scholarship...\""
+  },
+  {
+    "id": "log-m45inqp",
+    "timestamp": "2026-10-19T16:54:38.528Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "CREATE",
+    "record_id": "opp-verify-e2e",
+    "summary": "Curated new opportunity: \"End-to-End Verification Scholarship...\" (Switzerland)"
+  },
+  {
+    "id": "log-ffyk39u",
+    "timestamp": "2026-10-19T16:54:26.777Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "LOGIN",
+    "summary": "Authenticated with ADMIN role."
+  },
+  {
+    "id": "log-f6e124g",
+    "timestamp": "2026-10-19T16:53:35.720Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "DELETE",
+    "record_id": "opp-admin-test-1792428815714",
+    "summary": "Expunged record: \"Authorized Admin Grant in Quantum Comput...\""
+  },
+  {
+    "id": "log-qqovll9",
+    "timestamp": "2026-10-19T16:53:35.718Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "UPDATE",
+    "record_id": "opp-admin-test-1792428815714",
+    "summary": "Updated 1 field(s) for \"Authorized Admin Grant in Quantum C...\"",
+    "changed_fields": [
+      "funding_amount_note"
+    ]
+  },
+  {
+    "id": "log-7xipni3",
+    "timestamp": "2026-10-19T16:53:35.716Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "CREATE",
+    "record_id": "opp-admin-test-1792428815714",
+    "summary": "Curated new opportunity: \"Authorized Admin Grant in Quantum Comput...\" (Germany)"
+  },
+  {
+    "id": "log-k1wm20d",
+    "timestamp": "2026-10-19T16:53:35.711Z",
+    "actor": "nobody@university.edu",
+    "role": "viewer",
+    "action": "FAILED_LOGIN",
+    "summary": "Failed login attempt for nonexistent or invalid email"
+  },
+  {
+    "id": "log-7neot2v",
+    "timestamp": "2026-10-19T16:53:35.710Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "FAILED_LOGIN",
+    "summary": "Invalid passphrase entered"
+  },
+  {
+    "id": "log-lfhm5h4",
+    "timestamp": "2026-10-19T16:53:35.612Z",
+    "actor": "viewer@scholarlens.edu",
+    "role": "viewer",
+    "action": "LOGIN",
+    "summary": "Authenticated with VIEWER role."
+  },
+  {
+    "id": "log-4mq5zqv",
+    "timestamp": "2026-10-19T16:53:35.522Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "LOGIN",
+    "summary": "Authenticated with ADMIN role."
+  },
+  {
+    "id": "log-ybi993u",
+    "timestamp": "2026-10-19T16:38:17.703Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "DELETE",
+    "record_id": "opp-admin-test-1792427897696",
+    "summary": "Expunged record: \"Authorized Admin Grant in Quantum Comput...\""
+  },
+  {
+    "id": "log-9o41h0z",
+    "timestamp": "2026-10-19T16:38:17.701Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "UPDATE",
+    "record_id": "opp-admin-test-1792427897696",
+    "summary": "Updated 1 field(s) for \"Authorized Admin Grant in Quantum C...\"",
+    "changed_fields": [
+      "funding_amount_note"
+    ]
+  },
+  {
+    "id": "log-tl15g3p",
+    "timestamp": "2026-10-19T16:38:17.698Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "CREATE",
+    "record_id": "opp-admin-test-1792427897696",
+    "summary": "Curated new opportunity: \"Authorized Admin Grant in Quantum Comput...\" (Germany)"
+  },
+  {
+    "id": "log-pjvs5so",
+    "timestamp": "2026-10-19T16:38:17.693Z",
+    "actor": "nobody@university.edu",
+    "role": "viewer",
+    "action": "FAILED_LOGIN",
+    "summary": "Failed login attempt for nonexistent or invalid email"
+  },
+  {
+    "id": "log-63g6ckl",
+    "timestamp": "2026-10-19T16:38:17.692Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "FAILED_LOGIN",
+    "summary": "Invalid passphrase entered"
+  },
+  {
+    "id": "log-628i4tc",
+    "timestamp": "2026-10-19T16:38:17.593Z",
+    "actor": "viewer@scholarlens.edu",
+    "role": "viewer",
+    "action": "LOGIN",
+    "summary": "Authenticated with VIEWER role."
+  },
+  {
+    "id": "log-d481vfi",
+    "timestamp": "2026-10-19T16:38:17.502Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "LOGIN",
+    "summary": "Authenticated with ADMIN role."
+  },
+  {
+    "id": "log-6qluzpk",
+    "timestamp": "2026-10-19T16:37:30.489Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "LOGIN",
+    "summary": "Authenticated with ADMIN role."
+  },
+  {
+    "id": "log-jy9qhx4",
+    "timestamp": "2026-10-19T16:36:56.672Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "DELETE",
+    "record_id": "opp-admin-test-1792427816665",
+    "summary": "Expunged record: \"Authorized Admin Grant in Quantum Comput...\""
+  },
+  {
+    "id": "log-fngv5za",
+    "timestamp": "2026-10-19T16:36:56.670Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "UPDATE",
+    "record_id": "opp-admin-test-1792427816665",
+    "summary": "Updated 1 field(s) for \"Authorized Admin Grant in Quantum C...\"",
+    "changed_fields": [
+      "funding_amount_note"
+    ]
+  },
+  {
+    "id": "log-1j9h9hp",
+    "timestamp": "2026-10-19T16:36:56.667Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "CREATE",
+    "record_id": "opp-admin-test-1792427816665",
+    "summary": "Curated new opportunity: \"Authorized Admin Grant in Quantum Comput...\" (Germany)"
+  },
+  {
+    "id": "log-r8pli3c",
+    "timestamp": "2026-10-19T16:36:56.662Z",
+    "actor": "nobody@university.edu",
+    "role": "viewer",
+    "action": "FAILED_LOGIN",
+    "summary": "Failed login attempt for nonexistent or invalid email"
+  },
+  {
+    "id": "log-mjjch4j",
+    "timestamp": "2026-10-19T16:36:56.660Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "FAILED_LOGIN",
+    "summary": "Invalid passphrase entered"
+  },
+  {
+    "id": "log-q19h6cu",
+    "timestamp": "2026-10-19T16:36:56.557Z",
+    "actor": "viewer@scholarlens.edu",
+    "role": "viewer",
+    "action": "LOGIN",
+    "summary": "Authenticated with VIEWER role."
+  },
+  {
+    "id": "log-9yg5kko",
+    "timestamp": "2026-10-19T16:36:56.465Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "LOGIN",
+    "summary": "Authenticated with ADMIN role."
+  },
+  {
+    "id": "log-83007vq",
+    "timestamp": "2026-10-19T16:36:22.894Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "DELETE",
+    "record_id": "opp-admin-test-1792427782887",
+    "summary": "Expunged record: \"Authorized Admin Grant in Quantum Comput...\""
+  },
+  {
+    "id": "log-yrnjx8p",
+    "timestamp": "2026-10-19T16:36:22.892Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "UPDATE",
+    "record_id": "opp-admin-test-1792427782887",
+    "summary": "Updated 1 field(s) for \"Authorized Admin Grant in Quantum C...\"",
+    "changed_fields": [
+      "funding_amount_note"
+    ]
+  },
+  {
+    "id": "log-ja0eu0f",
+    "timestamp": "2026-10-19T16:36:22.889Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "CREATE",
+    "record_id": "opp-admin-test-1792427782887",
+    "summary": "Curated new opportunity: \"Authorized Admin Grant in Quantum Comput...\" (Germany)"
+  },
+  {
+    "id": "log-s1oc1rc",
+    "timestamp": "2026-10-19T16:36:22.884Z",
+    "actor": "nobody@university.edu",
+    "role": "viewer",
+    "action": "FAILED_LOGIN",
+    "summary": "Failed login attempt for nonexistent or invalid email"
+  },
+  {
+    "id": "log-oeamsf5",
+    "timestamp": "2026-10-19T16:36:22.883Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "FAILED_LOGIN",
+    "summary": "Invalid passphrase entered"
+  },
+  {
+    "id": "log-j6ncebz",
+    "timestamp": "2026-10-19T16:36:22.784Z",
+    "actor": "viewer@scholarlens.edu",
+    "role": "viewer",
+    "action": "LOGIN",
+    "summary": "Authenticated with VIEWER role."
+  },
+  {
+    "id": "log-5v98ey1",
+    "timestamp": "2026-10-19T16:36:22.691Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "LOGIN",
+    "summary": "Authenticated with ADMIN role."
+  },
+  {
+    "id": "log-2dxheqb",
+    "timestamp": "2026-10-19T16:34:33.300Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "DELETE",
+    "record_id": "opp-admin-test-1792427673293",
+    "summary": "Expunged record: \"Authorized Admin Grant in Quantum Comput...\""
+  },
+  {
+    "id": "log-gzik1q8",
+    "timestamp": "2026-10-19T16:34:33.298Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "UPDATE",
+    "record_id": "opp-admin-test-1792427673293",
+    "summary": "Updated 1 field(s) for \"Authorized Admin Grant in Quantum C...\"",
+    "changed_fields": [
+      "funding_amount_note"
+    ]
+  },
+  {
+    "id": "log-f37hmqt",
+    "timestamp": "2026-10-19T16:34:33.296Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "CREATE",
+    "record_id": "opp-admin-test-1792427673293",
+    "summary": "Curated new opportunity: \"Authorized Admin Grant in Quantum Comput...\" (Germany)"
+  },
+  {
+    "id": "log-yvf1kei",
+    "timestamp": "2026-10-19T16:34:33.288Z",
+    "actor": "nobody@university.edu",
+    "role": "viewer",
+    "action": "FAILED_LOGIN",
+    "summary": "Failed login attempt for nonexistent or invalid email"
+  },
+  {
+    "id": "log-l8lm4jf",
+    "timestamp": "2026-10-19T16:34:33.288Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "FAILED_LOGIN",
+    "summary": "Invalid passphrase entered"
+  },
+  {
+    "id": "log-28lnli9",
+    "timestamp": "2026-10-19T16:34:33.188Z",
+    "actor": "viewer@scholarlens.edu",
+    "role": "viewer",
+    "action": "LOGIN",
+    "summary": "Authenticated with VIEWER role."
+  },
+  {
+    "id": "log-08gebhb",
+    "timestamp": "2026-10-19T16:34:33.094Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "LOGIN",
+    "summary": "Authenticated with ADMIN role."
+  },
+  {
+    "id": "log-npbzxkz",
+    "timestamp": "2026-10-19T16:33:26.880Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "DELETE",
+    "record_id": "opp-admin-test-1792427606875",
+    "summary": "Expunged record: \"Authorized Admin Grant in Quantum Comput...\""
+  },
+  {
+    "id": "log-mckpul8",
+    "timestamp": "2026-10-19T16:33:26.879Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "UPDATE",
+    "record_id": "opp-admin-test-1792427606875",
+    "summary": "Updated 1 field(s) for \"Authorized Admin Grant in Quantum C...\"",
+    "changed_fields": [
+      "funding_amount_note"
+    ]
+  },
+  {
+    "id": "log-rd3xb4e",
+    "timestamp": "2026-10-19T16:33:26.877Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "CREATE",
+    "record_id": "opp-admin-test-1792427606875",
+    "summary": "Curated new opportunity: \"Authorized Admin Grant in Quantum Comput...\" (Germany)"
+  },
+  {
+    "id": "log-py8lcif",
+    "timestamp": "2026-10-19T16:33:26.872Z",
+    "actor": "nobody@university.edu",
+    "role": "viewer",
+    "action": "FAILED_LOGIN",
+    "summary": "Failed login attempt for nonexistent or invalid email"
+  },
+  {
+    "id": "log-rw3hbmx",
+    "timestamp": "2026-10-19T16:33:26.872Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "FAILED_LOGIN",
+    "summary": "Invalid passphrase entered"
+  },
+  {
+    "id": "log-rwedplt",
+    "timestamp": "2026-10-19T16:33:26.778Z",
+    "actor": "viewer@scholarlens.edu",
+    "role": "viewer",
+    "action": "LOGIN",
+    "summary": "Authenticated with VIEWER role."
+  },
+  {
+    "id": "log-1rdw4i5",
+    "timestamp": "2026-10-19T16:33:26.688Z",
+    "actor": "admin@scholarlens.edu",
+    "role": "admin",
+    "action": "LOGIN",
+    "summary": "Authenticated with ADMIN role."
+  },
+  {
+    "id": "log-6xx0ip0",
+    "timestamp": "2026-10-19T16:33:26.596Z",
+    "actor": "system",
+    "role": "admin",
+    "action": "RESET",
+    "summary": "Initial repository loaded with 112 curated opportunities and 4 test fixtures."
+  }
+]

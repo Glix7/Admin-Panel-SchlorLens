@@ -1,0 +1,203 @@
+import React, { useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { AnimatedPixelCanvas } from './AnimatedPixelCanvas';
+import { Eye, EyeOff, AlertCircle } from 'lucide-react';
+
+export const LoginForm: React.FC = () => {
+  const { login } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMsg(null);
+
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
+      setErrorMsg('Please enter your administrator email.');
+      return;
+    }
+
+    if (!password) {
+      setErrorMsg('Please enter your password.');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      await login(trimmedEmail, password);
+      // On success, AuthContext updates isAuthenticated -> App.tsx redirects to Screen 2 (Admin Panel)
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Invalid email or password. Please verify your credentials.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="h-screen lg:h-[100dvh] w-full flex flex-col lg:grid lg:grid-cols-2 bg-[#020d06] font-sans selection:bg-[#10b981] selection:text-white lg:overflow-hidden box-border">
+      {/* =========================================================================
+          LEFT PANEL: Dark forest-green & black background, animated pixel canvas,
+          Scholar Lens brand, and minimal tagline.
+         ========================================================================= */}
+      <section className="relative w-full h-full min-h-[300px] lg:min-h-0 flex flex-col justify-between p-6 sm:p-8 lg:p-12 overflow-hidden bg-[#020d06] text-white select-none">
+        {/* Animated Canvas Layer */}
+        <div className="absolute inset-0 z-0">
+          <AnimatedPixelCanvas />
+        </div>
+
+        {/* Ambient Dark Forest Overlay for deep visual contrast */}
+        <div className="absolute inset-0 z-1 pointer-events-none bg-gradient-to-t from-[#020d06] via-transparent to-[#020d06]/75" />
+
+        {/* Floating Accent Pixels */}
+        <div
+          className="absolute top-1/4 right-10 w-4 h-4 rounded-xs bg-[#84cc16]/30 blur-xs pointer-events-none animate-pulse motion-reduce:animate-none z-1"
+          style={{ animationDuration: '4s' }}
+        />
+        <div
+          className="absolute bottom-1/3 left-12 w-5 h-5 rounded-xs bg-[#06b6d4]/25 blur-xs pointer-events-none animate-pulse motion-reduce:animate-none z-1"
+          style={{ animationDuration: '6s' }}
+        />
+
+        {/* Top Header: Brand Lockup */}
+        <div className="relative z-10 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-[#10b981]/20 border border-[#10b981]/50 flex items-center justify-center text-[#34d399] font-black text-base shadow-md shadow-[#10b981]/15">
+            SL
+          </div>
+          <div>
+            <span className="text-lg font-extrabold tracking-tight text-white block leading-tight">
+              SCHOLAR<span className="text-[#34d399]">LENS</span>
+            </span>
+            <span className="text-[10px] text-emerald-400/90 block tracking-widest uppercase font-mono font-medium">
+              OPPORTUNITY INTELLIGENCE
+            </span>
+          </div>
+        </div>
+
+        {/* Center: Minimal Tagline & Title */}
+        <div className="relative z-10 my-auto py-8 max-w-lg">
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#10b981]/15 border border-[#10b981]/30 text-[#34d399] text-[11px] font-semibold tracking-wider uppercase mb-4 backdrop-blur-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#34d399] animate-ping motion-reduce:animate-none" />
+            ADMINISTRATIVE CONSOLE
+          </div>
+
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-[1.2] font-sans">
+            Discover Opportunities. <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#34d399] via-[#84cc16] to-[#22d3ee]">
+              Shape Your Future.
+            </span>
+          </h1>
+
+          <p className="mt-3.5 text-xs sm:text-sm text-emerald-100/75 leading-relaxed max-w-md">
+            Centralized platform for curated graduate technology opportunities, fellowships, grants, and intelligence management.
+          </p>
+        </div>
+
+        {/* Footer Note */}
+        <footer className="relative z-10 flex items-center justify-between text-[11px] text-emerald-200/40 pt-4 border-t border-emerald-900/30">
+          <span>Scholar Lens Admin Console</span>
+          <span className="font-mono">Secure Access</span>
+        </footer>
+      </section>
+
+      {/* =========================================================================
+          RIGHT PANEL: Plain white background, centered login form.
+          Includes ONLY Scholar Lens logo/name, email, password with show/hide,
+          Login button, and clear error message.
+         ========================================================================= */}
+      <section className="relative w-full h-full min-h-0 flex flex-col justify-center items-center p-6 sm:p-10 lg:p-12 xl:p-16 bg-white text-slate-900 overflow-y-auto lg:overflow-hidden box-border">
+        <div className="w-full max-w-[380px] mx-auto space-y-6">
+          {/* Centered Brand Icon & Heading */}
+          <div className="text-center space-y-1.5">
+            <div className="inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-[#020d06] text-[#34d399] border border-emerald-700/30 font-extrabold text-base shadow-sm mb-1">
+              SL
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 tracking-tight font-sans">
+              Log in to your account
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-500">
+              Scholar Lens Administrator Access
+            </p>
+          </div>
+
+          {/* Authentication Error Banner */}
+          {errorMsg && (
+            <div
+              role="alert"
+              className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs sm:text-sm flex items-start gap-2.5 animate-fadeIn"
+            >
+              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+              <span className="leading-snug">{errorMsg}</span>
+            </div>
+          )}
+
+          {/* Login Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Email Field */}
+            <div className="space-y-1.5">
+              <label htmlFor="admin-email" className="block text-xs font-semibold text-slate-700">
+                Email address
+              </label>
+              <input
+                id="admin-email"
+                type="email"
+                autoComplete="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="admin@scholarlens.edu"
+                required
+                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:border-[#10b981] focus:ring-2 focus:ring-[#10b981]/20 transition"
+              />
+            </div>
+
+            {/* Password Field */}
+            <div className="space-y-1.5">
+              <label htmlFor="admin-password" className="block text-xs font-semibold text-slate-700">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  id="admin-password"
+                  type={showPassword ? 'text' : 'password'}
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  required
+                  className="w-full px-3.5 py-2.5 pr-10 text-sm rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:border-[#10b981] focus:ring-2 focus:ring-[#10b981]/20 transition"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition p-1 cursor-pointer"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Submit / Login Button */}
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full mt-2 py-3 px-4 rounded-xl bg-[#10b981] hover:bg-[#059669] active:bg-[#047857] text-white text-sm font-semibold transition-all duration-150 flex items-center justify-center gap-2 shadow-sm hover:shadow-md disabled:opacity-60 cursor-pointer"
+            >
+              {isSubmitting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Logging in...</span>
+                </>
+              ) : (
+                <span>Login</span>
+              )}
+            </button>
+          </form>
+        </div>
+      </section>
+    </div>
+  );
+};

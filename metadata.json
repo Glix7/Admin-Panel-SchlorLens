@@ -1,0 +1,6 @@
+{
+  "name": "Scholar Lens",
+  "description": "Curated Technical Scholarship & Fellowship Intelligence Platform for Indian Applicants",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
