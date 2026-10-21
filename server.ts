@@ -429,7 +429,26 @@ async function startServer() {
   });
 }
 
-if (process.env.VERCEL !== '1') {
+// Only start the HTTP listener if executed directly as a standalone server
+// When imported as a serverless module by api/index.ts or Vercel, export app without listening
+const isServerless = Boolean(
+  process.env.VERCEL === '1' ||
+  process.env.VERCEL_ENV ||
+  process.env.AWS_LAMBDA_FUNCTION_NAME ||
+  process.env.LAMBDA_TASK_ROOT
+);
+
+const isMainModule = () => {
+  if (isServerless) return false;
+  try {
+    const entry = process.argv[1] || '';
+    return entry.endsWith('server.ts') || entry.endsWith('server.js');
+  } catch {
+    return false;
+  }
+};
+
+if (isMainModule()) {
   startServer().catch(err => {
     console.error('Failed to start Scholar Lens server:', err);
     process.exit(1);
