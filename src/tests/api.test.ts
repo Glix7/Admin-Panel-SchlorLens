@@ -158,4 +158,95 @@ describe('API & Data Access Layer Integration Tests', () => {
     assert.ok(logs.length > 0);
     assert.ok(logs.some(l => l.action === 'LOGIN'));
   });
+
+  test('Archive & Restore: Toggling archive status sets is_active and writes UPDATE log', () => {
+    const testRecord: Omit<Opportunity, 'created_at' | 'updated_at'> = {
+      id: 'opp-archive-test-01',
+      title: 'Opportunity for Archive Testing',
+      provider_name: 'Test Org',
+      provider_type: 'foundation',
+      host_country: 'Canada',
+      host_institution: 'University of Toronto',
+      degree_level: 'masters',
+      funding_type: 'full',
+      funding_summary: 'Full coverage',
+      funding_amount_note: '$30,000/yr',
+      fields_of_study: ['Computer Science'],
+      eligibility_summary: 'Eligible',
+      indian_applicants_eligible: true,
+      min_gpa_note: '7.5',
+      language_requirements: 'IELTS 7.0',
+      application_deadline: '2026-11-30',
+      deadline_note: 'Standard',
+      official_url: 'https://example.com/archive-test',
+      tags: ['canada'],
+      popularity_tier: 'long_tail',
+      curated_by: 'Admin',
+      verified_on: '2026-10-01',
+      is_active: true,
+    };
+
+    db.createRecord(testRecord, adminSession);
+
+    // Archive (soft delete -> is_active: false)
+    const archived = db.toggleArchiveRecord('opp-archive-test-01', true, adminSession);
+    assert.equal(archived.is_active, false);
+
+    // Restore -> is_active: true
+    const restored = db.toggleArchiveRecord('opp-archive-test-01', false, adminSession);
+    assert.equal(restored.is_active, true);
+
+    // Viewer cannot archive
+    assert.throws(() => {
+      db.toggleArchiveRecord('opp-archive-test-01', true, viewerSession);
+    }, /Forbidden: Only Administrators have archive permissions/);
+
+    // Cleanup
+    db.deleteRecord('opp-archive-test-01', adminSession);
+  });
+
+  test('Schema Tolerance: Server validates ngo provider_type and phd degree_level', () => {
+    const ngoPhdRecord: Omit<Opportunity, 'created_at' | 'updated_at'> = {
+      id: 'opp-ngo-phd-test-01',
+      title: 'Global NGO Doctoral Grant',
+      provider_name: 'Global Climate NGO',
+      provider_type: 'ngo',
+      host_country: 'Sweden',
+      host_institution: 'KTH Royal Institute',
+      degree_level: 'phd',
+      funding_type: 'full',
+      funding_summary: 'Full stipend',
+      funding_amount_note: 'SEK 35,000/mo',
+      fields_of_study: ['Artificial Intelligence'],
+      eligibility_summary: 'Master degree in CS/EE',
+      indian_applicants_eligible: true,
+      min_gpa_note: '8.0',
+      language_requirements: 'TOEFL 100',
+      application_deadline: '2026-12-15',
+      deadline_note: 'Winter cycle',
+      official_url: 'https://example.com/ngo-phd',
+      tags: ['sweden', 'phd'],
+      popularity_tier: 'long_tail',
+      curated_by: 'Admin',
+      verified_on: '2026-10-01',
+      is_active: true,
+    };
+
+    // Valid ngo + phd creation succeeds
+    const created = db.createRecord(ngoPhdRecord, adminSession);
+    assert.equal(created.provider_type, 'ngo');
+    assert.equal(created.degree_level, 'phd');
+
+    // Invalid enum rejected by server
+    assert.throws(() => {
+      db.createRecord({ ...ngoPhdRecord, id: 'opp-invalid-01', provider_type: 'invalid_type' as any }, adminSession);
+    }, /Invalid provider_type/);
+
+    assert.throws(() => {
+      db.createRecord({ ...ngoPhdRecord, id: 'opp-invalid-02', degree_level: 'invalid_degree' as any }, adminSession);
+    }, /Invalid degree_level/);
+
+    // Cleanup
+    db.deleteRecord('opp-ngo-phd-test-01', adminSession);
+  });
 });

@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="slBgGrad" cx="50%" cy="40%" r="65%">
+      <stop offset="0%" stop-color="#0a233c" />
+      <stop offset="60%" stop-color="#051322" />
+      <stop offset="100%" stop-color="#020810" />
+    </radialGradient>
+
+    <!-- Emerald Glow Gradient -->
+    <linearGradient id="slEmeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="50%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+
+    <!-- Cyan to Sky Gradient -->
+    <linearGradient id="slCyanGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06b6d4" />
+      <stop offset="60%" stop-color="#0ea5e9" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </linearGradient>
+
+    <!-- Gold Accent Gradient for Academic Tassel & Stars -->
+    <linearGradient id="slGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fde047" />
+      <stop offset="50%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+
+    <!-- Glass Lens Refraction Gradient -->
+    <linearGradient id="slLensGlow" x1="20%" y1="10%" x2="80%" y2="90%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35" />
+      <stop offset="40%" stop-color="#38bdf8" stop-opacity="0.1" />
+      <stop offset="70%" stop-color="#10b981" stop-opacity="0.05" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+    </linearGradient>
+
+    <!-- Outer Ring Gradient -->
+    <linearGradient id="slRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="35%" stop-color="#0ea5e9" />
+      <stop offset="70%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+
+    <!-- Drop Shadows -->
+    <filter id="slGlowFilter" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+
+    <filter id="slSoftShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.6" />
+    </filter>
+  </defs>
+
+  <!-- Base Rounded Hexagonal App Icon Canvas -->
+  <rect width="512" height="512" rx="112" fill="url(#slBgGrad)" />
+  <rect width="512" height="512" rx="112" fill="none" stroke="url(#slRingGrad)" stroke-width="6" stroke-opacity="0.6" />
+
+  <!-- Subtle Optical Reticle / Grid Markings -->
+  <g opacity="0.18">
+    <circle cx="256" cy="270" r="165" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="4 6" />
+    <circle cx="256" cy="270" r="130" fill="none" stroke="#34d399" stroke-width="1.5" />
+    <line x1="256" y1="95" x2="256" y2="445" stroke="#38bdf8" stroke-width="1" stroke-dasharray="3 5" />
+    <line x1="80" y1="270" x2="432" y2="270" stroke="#38bdf8" stroke-width="1" stroke-dasharray="3 5" />
+  </g>
+
+  <!-- ================= LENS BODY & APERTURE BLADES ================= -->
+  <!-- Outer Focus Ring -->
+  <circle cx="256" cy="270" r="118" fill="#071b30" stroke="url(#slRingGrad)" stroke-width="5" filter="url(#slSoftShadow)" />
+
+  <!-- Precision Aperture Segment Petals (Hexagonal Optical Shutter) -->
+  <g fill="none" stroke="url(#slEmeraldGrad)" stroke-width="3" opacity="0.85">
+    <path d="M 256 165 L 345 218" />
+    <path d="M 345 218 L 345 322" />
+    <path d="M 345 322 L 256 375" />
+    <path d="M 256 375 L 167 322" />
+    <path d="M 167 322 L 167 218" />
+    <path d="M 167 218 L 256 165" />
+  </g>
+
+  <!-- Inner Glass Convex Lens -->
+  <circle cx="256" cy="270" r="92" fill="#041220" stroke="url(#slCyanGrad)" stroke-width="3" />
+  <circle cx="256" cy="270" r="92" fill="url(#slLensGlow)" />
+
+  <!-- Knowledge Book Waves (Scholar Foundation at base of lens) -->
+  <g fill="none" stroke="url(#slCyanGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 196 338 C 220 326, 244 330, 256 336 C 268 330, 292 326, 316 338" />
+    <path d="M 196 348 C 220 336, 244 340, 256 346 C 268 340, 292 336, 316 348" opacity="0.6" stroke-width="3" />
+  </g>
+
+  <!-- ================= SCHOLAR GRADUATION MORTARBOARD ================= -->
+  <!-- Cap Diamond Plate (Perspective angle atop the lens) -->
+  <g filter="url(#slGlowFilter)">
+    <!-- Shadow under cap -->
+    <polygon points="256,112 376,164 256,216 136,164" fill="#020912" opacity="0.7" />
+    <!-- Main Cap Surface -->
+    <polygon points="256,108 382,162 256,216 130,162" fill="url(#slEmeraldGrad)" />
+    <!-- Specular Highlight Rim on Upper Edge -->
+    <polyline points="130,162 256,108 382,162" fill="none" stroke="#a7f3d0" stroke-width="3.5" stroke-linecap="round" />
+    <!-- Cap Skull Cap / Underband -->
+    <path d="M 188 188 Q 256 226 324 188 L 324 204 Q 256 244 188 204 Z" fill="#064e3b" stroke="#10b981" stroke-width="2" />
+
+    <!-- Button at Cap Apex -->
+    <ellipse cx="256" cy="162" rx="9" ry="6" fill="url(#slGoldGrad)" stroke="#fef08a" stroke-width="1.5" />
+
+    <!-- Academic Gold Tassel Hanging Down Right Edge -->
+    <path d="M 256 162 C 285 166, 335 180, 348 220 C 354 238, 356 264, 358 278" fill="none" stroke="url(#slGoldGrad)" stroke-width="3.5" stroke-linecap="round" />
+    <!-- Tassel Fringe Ribbon -->
+    <polygon points="354,278 362,278 365,306 351,306" fill="url(#slGoldGrad)" />
+    <circle cx="358" cy="280" r="3.5" fill="#fef08a" />
+  </g>
+
+  <!-- ================= OPTICAL CORE / FOCAL STAR ================= -->
+  <!-- Central Focus Flare & Discovery Star -->
+  <g transform="translate(256, 270)">
+    <!-- Concentric Target Reticle -->
+    <circle cx="0" cy="0" r="32" fill="#0b2942" fill-opacity="0.6" stroke="#38bdf8" stroke-width="2" />
+    <circle cx="0" cy="0" r="16" fill="#10b981" fill-opacity="0.3" stroke="#34d399" stroke-width="1.5" />
+
+    <!-- Four-Point Diamond Star of Insight -->
+    <path d="M 0 -24 Q 0 0 -24 0 Q 0 0 0 24 Q 0 0 24 0 Q 0 0 0 -24 Z" fill="#ffffff" filter="url(#slGlowFilter)" />
+    <circle cx="0" cy="0" r="4.5" fill="#fef08a" />
+
+    <!-- Horizontal & Vertical Laser Tick Crosshairs -->
+    <line x1="-48" y1="0" x2="-34" y2="0" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" />
+    <line x1="34" y1="0" x2="48" y2="0" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" />
+    <line x1="0" y1="-48" x2="0" y2="-34" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" />
+    <line x1="0" y1="34" x2="0" y2="48" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" />
+  </g>
+
+  <!-- Glass Arc Specular Highlights -->
+  <path d="M 185 210 A 88 88 0 0 1 315 205" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity="0.4" />
+  <circle cx="178" cy="235" r="4" fill="#ffffff" opacity="0.6" />
+</svg>

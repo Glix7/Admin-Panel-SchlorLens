@@ -118,6 +118,16 @@ opp-bad-02,,Max Planck,Germany,masters,full,https://example.com/2`;
     assert.equal(res.errors[0].row, 3); // Second data row is line 3
     assert.ok(res.errors[0].reason.includes('Title is empty or too short'));
   });
+
+  test('parseOpportunitiesCSV accepts ngo provider_type and phd degree_level', () => {
+    const csv = `id,title,provider_name,provider_type,host_country,degree_level,funding_type,official_url
+opp-ngo-phd-01,Climate Tech Doctoral Fellowship,GreenEarth Foundation,ngo,Germany,phd,full,https://example.com/ngo-phd`;
+    const res = parseOpportunitiesCSV(csv);
+    assert.equal(res.validRecords.length, 1);
+    assert.equal(res.validRecords[0].provider_type, 'ngo');
+    assert.equal(res.validRecords[0].degree_level, 'phd');
+    assert.equal(res.errors.length, 0);
+  });
 });
 
 describe('Unit Tests: Opportunity Completeness & Quality Scoring', () => {

@@ -1,25 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, Suspense, lazy } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import { Opportunity, DataFilterOptions, OpportunityStats } from '../../types';
 import { Sidebar } from '../layout/Sidebar';
 import { Header } from '../layout/Header';
 import { MetricCard } from './MetricCard';
-import {
-  DeadlinesTimelineChart,
-  CountryDistributionChart,
-  FundingTypeDistributionChart,
-  DegreeLevelDistributionChart,
-  StudyFieldDistributionChart,
-} from './OpportunitiesCharts';
 import { RecordsTable } from '../records/RecordsTable';
 import { RecordDetailDrawer } from '../records/RecordDetailDrawer';
-import { RecordUpsertModal } from '../records/RecordUpsertModal';
-import { CsvImportView } from '../import/CsvImportView';
-import { DataQualityView } from '../quality/DataQualityView';
-import { ActivityLogView } from '../activity/ActivityLogView';
-import { AdminSettingsView } from '../settings/AdminSettingsView';
-import { VivaPackModal } from '../viva/VivaPackModal';
 import {
   GraduationCap,
   Calendar,
@@ -40,6 +27,57 @@ import {
   Layers,
 } from 'lucide-react';
 
+// ==============================================================================
+// Code Splitting: Lazy-load Heavy Analytical Visualizations & Admin Modules
+// ==============================================================================
+const DeadlinesTimelineChart = lazy(() =>
+  import('./OpportunitiesCharts').then(m => ({ default: m.DeadlinesTimelineChart }))
+);
+const CountryDistributionChart = lazy(() =>
+  import('./OpportunitiesCharts').then(m => ({ default: m.CountryDistributionChart }))
+);
+const FundingTypeDistributionChart = lazy(() =>
+  import('./OpportunitiesCharts').then(m => ({ default: m.FundingTypeDistributionChart }))
+);
+const DegreeLevelDistributionChart = lazy(() =>
+  import('./OpportunitiesCharts').then(m => ({ default: m.DegreeLevelDistributionChart }))
+);
+const StudyFieldDistributionChart = lazy(() =>
+  import('./OpportunitiesCharts').then(m => ({ default: m.StudyFieldDistributionChart }))
+);
+
+const CsvImportView = lazy(() =>
+  import('../import/CsvImportView').then(m => ({ default: m.CsvImportView }))
+);
+const DataQualityView = lazy(() =>
+  import('../quality/DataQualityView').then(m => ({ default: m.DataQualityView }))
+);
+const ActivityLogView = lazy(() =>
+  import('../activity/ActivityLogView').then(m => ({ default: m.ActivityLogView }))
+);
+const AdminSettingsView = lazy(() =>
+  import('../settings/AdminSettingsView').then(m => ({ default: m.AdminSettingsView }))
+);
+const VivaPackModal = lazy(() =>
+  import('../viva/VivaPackModal').then(m => ({ default: m.VivaPackModal }))
+);
+const RecordUpsertModal = lazy(() =>
+  import('../records/RecordUpsertModal').then(m => ({ default: m.RecordUpsertModal }))
+);
+
+const ViewSkeleton: React.FC = () => (
+  <div className="p-8 text-center text-xs text-slate-400 space-y-3">
+    <div className="w-6 h-6 border-2 border-[#12805c] border-t-transparent rounded-full animate-spin mx-auto"></div>
+    <p>Loading module...</p>
+  </div>
+);
+
+const ChartSkeleton: React.FC = () => (
+  <div className="h-72 sm:h-80 rounded-xl bg-slate-900 border border-slate-800 animate-pulse flex items-center justify-center text-xs text-slate-500">
+    Loading visualization...
+  </div>
+);
+
 interface Props {}
 
 export const DashboardMaster: React.FC<Props> = () => {
@@ -48,6 +86,7 @@ export const DashboardMaster: React.FC<Props> = () => {
   // Navigation State
   const [activeView, setActiveView] = useState('dashboard');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   // Data State
   const [stats, setStats] = useState<OpportunityStats | null>(null);
@@ -130,17 +169,27 @@ export const DashboardMaster: React.FC<Props> = () => {
       return;
     }
 
-    const confirmed = window.confirm(
-      'Are you sure you want to delete this scholarship opportunity? This will be recorded in the server audit trail.'
-    );
-    if (!confirmed) return;
-
     try {
       await api.deleteRecord(id);
-      showToast('Opportunity removed from repository.');
+      showToast('Opportunity permanently removed from repository.');
       loadData();
     } catch (err: any) {
       showToast(err.message || 'Deletion failed', 'error');
+    }
+  };
+
+  const handleToggleArchive = async (id: string, archive: boolean) => {
+    if (!isAdmin) {
+      showToast('Forbidden: Administrator authorization required.', 'error');
+      return;
+    }
+
+    try {
+      await api.archiveRecord(id, archive);
+      showToast(`Opportunity ${archive ? 'archived' : 'restored'} successfully.`);
+      loadData();
+    } catch (err: any) {
+      showToast(err.message || 'Action failed', 'error');
     }
   };
 
@@ -161,8 +210,8 @@ export const DashboardMaster: React.FC<Props> = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#081524] text-slate-100 flex font-sans">
-      {/* Sidebar with 10 sections */}
+    <div className="min-h-screen bg-[#081524] text-slate-100 flex font-sans overflow-x-hidden">
+      {/* Sidebar (Desktop permanent / collapsible rail; Mobile slide-over drawer) */}
       <Sidebar
         activeView={activeView}
         setActiveView={setActiveView}
@@ -175,34 +224,37 @@ export const DashboardMaster: React.FC<Props> = () => {
         onOpenVivaGuide={() => setIsVivaGuideOpen(true)}
         isCollapsed={isSidebarCollapsed}
         setIsCollapsed={setIsSidebarCollapsed}
+        isMobileOpen={isMobileNavOpen}
+        onCloseMobile={() => setIsMobileNavOpen(false)}
       />
 
-      {/* Main Viewport */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 overflow-y-auto overflow-x-hidden">
+        {/* Compact Header with Mobile Menu Trigger */}
         <Header
           activeView={activeView}
           onOpenVivaGuide={() => setIsVivaGuideOpen(true)}
+          onOpenMobileNav={() => setIsMobileNavOpen(true)}
         />
 
-        {/* Global Toast */}
+        {/* Global Alert / Toast Notification */}
         {toast && (
-          <div className="fixed top-20 right-6 z-50 animate-fadeIn">
+          <div className="px-3.5 sm:px-6 pt-3">
             <div
-              className={`p-3.5 rounded-lg border text-xs shadow-xl flex items-center gap-2.5 max-w-md ${
+              className={`p-3 rounded-lg border text-xs flex items-center gap-2 animate-fadeIn shadow-md ${
                 toast.type === 'success'
-                  ? 'bg-emerald-950/90 border-emerald-700 text-emerald-200'
-                  : 'bg-rose-950/90 border-rose-700 text-rose-200'
+                  ? 'bg-emerald-950/80 border-emerald-800 text-emerald-200'
+                  : 'bg-rose-950/80 border-rose-800 text-rose-200'
               }`}
             >
               {toast.type === 'success' ? (
-                <CheckCircle2 className="w-4 h-4 text-[#1ec992] shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
               ) : (
                 <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
               )}
               <span className="font-medium">{toast.message}</span>
               <button
                 onClick={() => setToast(null)}
-                className="ml-auto text-slate-400 hover:text-white text-xs pl-2"
+                className="ml-auto text-slate-400 hover:text-white text-xs pl-2 cursor-pointer"
               >
                 ✕
               </button>
@@ -210,14 +262,16 @@ export const DashboardMaster: React.FC<Props> = () => {
           </div>
         )}
 
-        <main className="flex-1 p-6 max-w-7xl w-full mx-auto space-y-6">
+        <main className="flex-1 p-3.5 sm:p-4 md:p-6 max-w-7xl w-full mx-auto space-y-4 sm:space-y-6 overflow-x-hidden">
           {/* VIEW: DASHBOARD OVERVIEW */}
           {activeView === 'dashboard' && stats && (
-            <div className="space-y-6 animate-fadeIn">
+            <div className="space-y-4 sm:space-y-6 animate-fadeIn">
               {/* Header Action Strip */}
-              <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 flex flex-wrap items-center justify-between gap-3">
+              <div className="p-4 sm:p-5 rounded-xl bg-slate-900 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                 <div>
-                  <h1 className="text-xl font-bold text-white font-serif">Scholarship Intelligence Overview</h1>
+                  <h1 className="text-lg sm:text-xl font-bold text-white font-serif">
+                    Scholarship Intelligence Overview
+                  </h1>
                   <p className="text-xs text-slate-400 mt-0.5">
                     Live database metrics for funded technical graduate study for Indian candidates.
                   </p>
@@ -230,7 +284,7 @@ export const DashboardMaster: React.FC<Props> = () => {
                         setEditingRecord(null);
                         setIsUpsertOpen(true);
                       }}
-                      className="px-3.5 py-2 rounded-lg bg-[#12805c] hover:bg-[#0f6b4d] text-white text-xs font-semibold flex items-center gap-1.5 transition"
+                      className="min-h-[44px] px-3.5 py-2 rounded-lg bg-[#12805c] hover:bg-[#0f6b4d] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer"
                     >
                       <PlusCircle className="w-4 h-4" />
                       <span>Curate Opportunity</span>
@@ -240,7 +294,7 @@ export const DashboardMaster: React.FC<Props> = () => {
                   {isAdmin && (
                     <button
                       onClick={() => setActiveView('import')}
-                      className="px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-medium flex items-center gap-1.5 transition"
+                      className="min-h-[44px] px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-medium flex items-center justify-center gap-1.5 transition cursor-pointer"
                     >
                       <Upload className="w-3.5 h-3.5 text-[#1ec992]" />
                       <span>Batch Ingest</span>
@@ -249,7 +303,7 @@ export const DashboardMaster: React.FC<Props> = () => {
 
                   <button
                     onClick={() => api.downloadExportCSV(filters)}
-                    className="px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-medium flex items-center gap-1.5 transition"
+                    className="min-h-[44px] px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-medium flex items-center justify-center gap-1.5 transition cursor-pointer"
                   >
                     <Download className="w-3.5 h-3.5 text-blue-400" />
                     <span>Export CSV</span>
@@ -257,9 +311,9 @@ export const DashboardMaster: React.FC<Props> = () => {
                 </div>
               </div>
 
-              {/* 10 Dashboard Summary Cards from Section 4 */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
+              {/* 10 Dashboard Summary Cards: Single/2-col mobile, 3-col tablet, 5-col desktop */}
+              <div className="space-y-2.5 sm:space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-1">
                   <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                     Live Dataset Metric Cards (10 Core Indicators)
                   </span>
@@ -268,8 +322,7 @@ export const DashboardMaster: React.FC<Props> = () => {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                  {/* 1. Total Opportunities */}
+                <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
                   <MetricCard
                     label="Total Opportunities"
                     value={stats.total_records}
@@ -278,7 +331,6 @@ export const DashboardMaster: React.FC<Props> = () => {
                     colorClass="bg-emerald-500/10 text-[#1ec992] border border-emerald-500/20"
                   />
 
-                  {/* 2. Active Opportunities */}
                   <MetricCard
                     label="Active Opportunities"
                     value={stats.active_count}
@@ -287,16 +339,14 @@ export const DashboardMaster: React.FC<Props> = () => {
                     colorClass="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                   />
 
-                  {/* 3. Inactive Opportunities */}
                   <MetricCard
                     label="Inactive Opportunities"
                     value={stats.inactive_count}
-                    subtext="Archived or legacy fixtures"
+                    subtext="Archived or fixtures"
                     icon={XCircle}
                     colorClass="bg-slate-800 text-slate-400 border border-slate-700"
                   />
 
-                  {/* 4. Full Funding */}
                   <MetricCard
                     label="Full Funding"
                     value={stats.full_funding_count}
@@ -305,7 +355,6 @@ export const DashboardMaster: React.FC<Props> = () => {
                     colorClass="bg-emerald-500/10 text-[#1ec992] border border-emerald-500/20"
                   />
 
-                  {/* 5. Partial Funding */}
                   <MetricCard
                     label="Partial Funding"
                     value={stats.partial_funding_count}
@@ -314,7 +363,6 @@ export const DashboardMaster: React.FC<Props> = () => {
                     colorClass="bg-blue-500/10 text-blue-400 border border-blue-500/20"
                   />
 
-                  {/* 6. Tuition Waiver */}
                   <MetricCard
                     label="Tuition Waivers"
                     value={stats.tuition_waiver_count}
@@ -323,7 +371,6 @@ export const DashboardMaster: React.FC<Props> = () => {
                     colorClass="bg-purple-500/10 text-purple-400 border border-purple-500/20"
                   />
 
-                  {/* 7. Distinct Host Nations */}
                   <MetricCard
                     label="Host Countries"
                     value={stats.distinct_countries_count}
@@ -332,7 +379,6 @@ export const DashboardMaster: React.FC<Props> = () => {
                     colorClass="bg-blue-500/10 text-blue-400 border border-blue-500/20"
                   />
 
-                  {/* 8. Eligible for Indian Applicants */}
                   <MetricCard
                     label="Indian Eligible"
                     value={stats.indian_eligible_count}
@@ -341,7 +387,6 @@ export const DashboardMaster: React.FC<Props> = () => {
                     colorClass="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                   />
 
-                  {/* 9. Upcoming Deadlines */}
                   <MetricCard
                     label="Upcoming Deadlines"
                     value={stats.closing_in_30_days}
@@ -350,7 +395,6 @@ export const DashboardMaster: React.FC<Props> = () => {
                     colorClass="bg-amber-500/10 text-amber-400 border border-amber-500/20"
                   />
 
-                  {/* 10. Missing or Suspicious Data Fields */}
                   <MetricCard
                     label="Quality / Flagged"
                     value={stats.suspicious_missing_count}
@@ -361,36 +405,48 @@ export const DashboardMaster: React.FC<Props> = () => {
                 </div>
               </div>
 
-              {/* 5 Analytical Visualizations from Section 4 */}
+              {/* 5 Analytical Visualizations (Recharts, lazy-loaded) */}
               <div className="space-y-3">
                 <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 block">
                   Interactive Dataset Visualizations (Recharts)
                 </span>
 
-                {/* Row 1: Deadlines & Country Distribution */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <DeadlinesTimelineChart stats={stats} />
-                  <CountryDistributionChart stats={stats} />
+                {/* Row 1: Deadlines & Country Distribution (side-by-side on tablet/desktop) */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                  <Suspense fallback={<ChartSkeleton />}>
+                    <DeadlinesTimelineChart stats={stats} />
+                  </Suspense>
+                  <Suspense fallback={<ChartSkeleton />}>
+                    <CountryDistributionChart stats={stats} />
+                  </Suspense>
                 </div>
 
                 {/* Row 2: Funding Type, Degree Level, and Study Field */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <FundingTypeDistributionChart stats={stats} />
-                  <DegreeLevelDistributionChart stats={stats} />
-                  <StudyFieldDistributionChart stats={stats} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                  <Suspense fallback={<ChartSkeleton />}>
+                    <FundingTypeDistributionChart stats={stats} />
+                  </Suspense>
+                  <Suspense fallback={<ChartSkeleton />}>
+                    <DegreeLevelDistributionChart stats={stats} />
+                  </Suspense>
+                  <Suspense fallback={<ChartSkeleton />}>
+                    <div className="sm:col-span-2 lg:col-span-1">
+                      <StudyFieldDistributionChart stats={stats} />
+                    </div>
+                  </Suspense>
                 </div>
               </div>
 
               {/* Data Quality Overview Card */}
-              <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 space-y-4 text-xs">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div className="p-4 sm:p-5 rounded-xl bg-slate-900 border border-slate-800 space-y-3.5 text-xs">
+                <div className="flex flex-wrap items-center justify-between pb-3 border-b border-slate-800 gap-2">
                   <div className="flex items-center gap-2">
                     <AlertTriangle className="w-4 h-4 text-amber-400" />
                     <h3 className="font-bold text-white font-serif">Data Quality Audit & Compliance</h3>
                   </div>
                   <button
                     onClick={() => setActiveView('quality')}
-                    className="text-[#1ec992] hover:underline flex items-center gap-1 font-medium"
+                    className="min-h-[38px] text-[#1ec992] hover:underline flex items-center gap-1 font-medium cursor-pointer"
                   >
                     <span>Open Full Quality Audit</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -430,14 +486,14 @@ export const DashboardMaster: React.FC<Props> = () => {
 
               {/* Records Preview Table */}
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
                     <h3 className="text-sm font-bold text-white font-serif">Curated Opportunities Catalog</h3>
                     <p className="text-xs text-slate-400">Search and filter active scholarships</p>
                   </div>
                   <button
                     onClick={() => setActiveView('records')}
-                    className="text-xs text-[#1ec992] hover:underline font-medium flex items-center gap-1 transition"
+                    className="min-h-[38px] text-xs text-[#1ec992] hover:underline font-medium flex items-center gap-1 transition cursor-pointer"
                   >
                     <span>View All Opportunities</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -455,6 +511,7 @@ export const DashboardMaster: React.FC<Props> = () => {
                     setIsUpsertOpen(true);
                   }}
                   onDeleteRecord={handleDeleteRecord}
+                  onToggleArchive={handleToggleArchive}
                   canEdit={isAdmin}
                   canDelete={isAdmin}
                   isLoading={isLoading}
@@ -465,23 +522,23 @@ export const DashboardMaster: React.FC<Props> = () => {
 
           {/* VIEW 2: RECORDS CATALOG */}
           {activeView === 'records' && (
-            <div className="space-y-6 animate-fadeIn">
-              <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="space-y-4 sm:space-y-6 animate-fadeIn">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <h1 className="text-xl font-bold text-white font-serif">Scholarship Opportunities Catalog</h1>
+                  <h1 className="text-lg sm:text-xl font-bold text-white font-serif">Scholarship Opportunities Catalog</h1>
                   <p className="text-xs text-slate-400">
                     Curated technical master's and fellowship opportunities for Indian applicants across 25 nations.
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   {isAdmin && (
                     <button
                       onClick={() => {
                         setEditingRecord(null);
                         setIsUpsertOpen(true);
                       }}
-                      className="px-3.5 py-2 rounded-lg bg-[#12805c] hover:bg-[#0f6b4d] text-white text-xs font-semibold flex items-center gap-1.5 transition"
+                      className="min-h-[44px] px-3.5 py-2 rounded-lg bg-[#12805c] hover:bg-[#0f6b4d] text-white text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
                     >
                       <PlusCircle className="w-4 h-4" />
                       <span>Curate Opportunity</span>
@@ -489,7 +546,7 @@ export const DashboardMaster: React.FC<Props> = () => {
                   )}
                   <button
                     onClick={() => api.downloadExportCSV(filters)}
-                    className="px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-medium flex items-center gap-1.5 transition"
+                    className="min-h-[44px] px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-medium flex items-center gap-1.5 transition cursor-pointer"
                   >
                     <Download className="w-3.5 h-3.5 text-blue-400" />
                     <span>Export CSV</span>
@@ -508,6 +565,7 @@ export const DashboardMaster: React.FC<Props> = () => {
                   setIsUpsertOpen(true);
                 }}
                 onDeleteRecord={handleDeleteRecord}
+                onToggleArchive={handleToggleArchive}
                 canEdit={isAdmin}
                 canDelete={isAdmin}
                 isLoading={isLoading}
@@ -515,43 +573,55 @@ export const DashboardMaster: React.FC<Props> = () => {
             </div>
           )}
 
-          {/* VIEW 4: CSV IMPORT */}
+          {/* VIEW 4: CSV IMPORT (Lazy Loaded) */}
           {activeView === 'import' && (
             <div className="animate-fadeIn">
-              <CsvImportView
-                onImportComplete={() => {
-                  loadData();
-                  showToast('Import completed. Dashboard metrics updated.');
-                }}
-              />
+              <Suspense fallback={<ViewSkeleton />}>
+                <CsvImportView
+                  onImportComplete={() => {
+                    loadData();
+                    showToast('Import completed. Dashboard metrics updated.');
+                  }}
+                />
+              </Suspense>
             </div>
           )}
 
-          {/* VIEW 6: QUALITY SCANNER */}
+          {/* VIEW 6: QUALITY SCANNER (Lazy Loaded) */}
           {activeView === 'quality' && (
             <div className="animate-fadeIn">
-              <DataQualityView
-                onSelectRecordToInspect={id => {
-                  api.getRecord(id).then(r => setSelectedRecordForDetail(r));
-                }}
-              />
+              <Suspense fallback={<ViewSkeleton />}>
+                <DataQualityView
+                  onSelectRecordToInspect={id => {
+                    api.getRecord(id).then(r => setSelectedRecordForDetail(r));
+                  }}
+                  onFilterRecords={newFilters => {
+                    setFilters(prev => ({ ...prev, ...newFilters, page: 1 }));
+                    setActiveView('records');
+                  }}
+                />
+              </Suspense>
             </div>
           )}
 
-          {/* VIEW 7: ACTIVITY LOGS */}
+          {/* VIEW 7: ACTIVITY LOGS (Lazy Loaded) */}
           {activeView === 'activity' && (
             <div className="animate-fadeIn">
-              <ActivityLogView />
+              <Suspense fallback={<ViewSkeleton />}>
+                <ActivityLogView />
+              </Suspense>
             </div>
           )}
 
-          {/* VIEW 8: ADMIN SETTINGS */}
+          {/* VIEW 8: ADMIN SETTINGS (Lazy Loaded) */}
           {activeView === 'settings' && (
             <div className="animate-fadeIn">
-              <AdminSettingsView
-                onResetSeedSuccess={loadData}
-                showToast={showToast}
-              />
+              <Suspense fallback={<ViewSkeleton />}>
+                <AdminSettingsView
+                  onResetSeedSuccess={loadData}
+                  showToast={showToast}
+                />
+              </Suspense>
             </div>
           )}
         </main>
@@ -565,20 +635,29 @@ export const DashboardMaster: React.FC<Props> = () => {
           setEditingRecord(r);
           setIsUpsertOpen(true);
         }}
+        onToggleArchive={handleToggleArchive}
         canEdit={isAdmin}
       />
 
-      <RecordUpsertModal
-        isOpen={isUpsertOpen}
-        onClose={() => {
-          setIsUpsertOpen(false);
-          setEditingRecord(null);
-        }}
-        onSubmit={handleSaveRecord}
-        initialRecord={editingRecord}
-      />
+      <Suspense fallback={null}>
+        {isUpsertOpen && (
+          <RecordUpsertModal
+            isOpen={isUpsertOpen}
+            onClose={() => {
+              setIsUpsertOpen(false);
+              setEditingRecord(null);
+            }}
+            onSubmit={handleSaveRecord}
+            initialRecord={editingRecord}
+          />
+        )}
+      </Suspense>
 
-      <VivaPackModal isOpen={isVivaGuideOpen} onClose={() => setIsVivaGuideOpen(false)} />
+      <Suspense fallback={null}>
+        {isVivaGuideOpen && (
+          <VivaPackModal isOpen={isVivaGuideOpen} onClose={() => setIsVivaGuideOpen(false)} />
+        )}
+      </Suspense>
     </div>
   );
 };

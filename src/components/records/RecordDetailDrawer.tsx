@@ -13,16 +13,19 @@ import {
   CheckCircle2,
   Clock,
   Edit3,
+  Archive,
+  ArchiveRestore,
 } from 'lucide-react';
 
 interface Props {
   record: Opportunity | null;
   onClose: () => void;
   onEdit: (record: Opportunity) => void;
+  onToggleArchive?: (id: string, archive: boolean) => void;
   canEdit: boolean;
 }
 
-export const RecordDetailDrawer: React.FC<Props> = ({ record, onClose, onEdit, canEdit }) => {
+export const RecordDetailDrawer: React.FC<Props> = ({ record, onClose, onEdit, onToggleArchive, canEdit }) => {
   if (!record) return null;
 
   const now = new Date();
@@ -51,7 +54,8 @@ export const RecordDetailDrawer: React.FC<Props> = ({ record, onClose, onEdit, c
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            className="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+            aria-label="Close details"
           >
             <X className="w-5 h-5" />
           </button>
@@ -186,20 +190,41 @@ export const RecordDetailDrawer: React.FC<Props> = ({ record, onClose, onEdit, c
         </div>
 
         {/* Actions */}
-        <div className="flex justify-end gap-2 pt-2">
+        <div className="flex flex-wrap items-center justify-end gap-2 pt-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white"
+            className="min-h-[44px] px-4 py-2 text-xs font-medium text-slate-400 hover:text-white transition cursor-pointer"
           >
             Dismiss
           </button>
+          {canEdit && onToggleArchive && (
+            <button
+              onClick={() => {
+                const msg = record.is_active
+                  ? `Archive opportunity "${record.title}"?\n\n(Soft delete: This hides the record from active lists but does NOT permanently delete it. You can restore it anytime.)`
+                  : `Restore opportunity "${record.title}" to active status?`;
+                if (window.confirm(msg)) {
+                  onToggleArchive(record.id, record.is_active);
+                  onClose();
+                }
+              }}
+              className={`min-h-[44px] px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                record.is_active
+                  ? 'bg-amber-950/60 hover:bg-amber-900/80 text-amber-300 border border-amber-800'
+                  : 'bg-emerald-950/60 hover:bg-emerald-900/80 text-emerald-300 border border-emerald-800'
+              }`}
+            >
+              {record.is_active ? <Archive className="w-4 h-4" /> : <ArchiveRestore className="w-4 h-4" />}
+              <span>{record.is_active ? 'Archive Record' : 'Restore Record'}</span>
+            </button>
+          )}
           {canEdit && (
             <button
               onClick={() => {
                 onClose();
                 onEdit(record);
               }}
-              className="px-4 py-2 bg-[#12805c] hover:bg-[#0f6b4d] text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition"
+              className="min-h-[44px] px-4 py-2 bg-[#12805c] hover:bg-[#0f6b4d] text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer"
             >
               <Edit3 className="w-4 h-4" />
               <span>Edit Opportunity</span>

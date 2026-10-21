@@ -29,18 +29,18 @@ export const DeadlinesTimelineChart: React.FC<Props> = ({ stats }) => {
   }));
 
   return (
-    <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 shadow-sm flex flex-col h-80">
-      <div className="flex items-center justify-between mb-2">
+    <div className="p-4 sm:p-5 rounded-xl bg-slate-900 border border-slate-800 shadow-sm flex flex-col h-72 sm:h-80">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
         <div>
           <h3 className="text-sm font-bold text-white font-serif">Application Deadline Schedule</h3>
-          <p className="text-xs text-slate-400">Distribution of upcoming intake deadlines by calendar month</p>
+          <p className="text-[11px] sm:text-xs text-slate-400">Distribution of upcoming intake deadlines by month</p>
         </div>
-        <span className="text-xs font-mono text-slate-400">
+        <span className="text-[11px] sm:text-xs font-mono text-slate-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800">
           <strong className="text-[#1ec992]">{stats.closing_in_30_days}</strong> Closing in 30d
         </span>
       </div>
 
-      <div className="flex-1 w-full mt-2">
+      <div className="flex-1 w-full min-h-0 mt-1">
         {data.length === 0 ? (
           <div className="h-full flex items-center justify-center text-slate-500 text-xs">
             No scheduled deadlines recorded.
@@ -55,8 +55,8 @@ export const DeadlinesTimelineChart: React.FC<Props> = ({ stats }) => {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-              <XAxis dataKey="month" stroke="#64748b" fontSize={11} tickLine={false} />
-              <YAxis stroke="#64748b" fontSize={11} tickLine={false} />
+              <XAxis dataKey="month" stroke="#64748b" fontSize={10} tickLine={false} />
+              <YAxis stroke="#64748b" fontSize={10} tickLine={false} />
               <Tooltip
                 contentStyle={{
                   backgroundColor: '#06101e',
@@ -88,23 +88,31 @@ export const CountryDistributionChart: React.FC<Props> = ({ stats }) => {
   const data = stats.by_country.slice(0, 8);
 
   return (
-    <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 shadow-sm flex flex-col h-80">
-      <div className="flex items-center justify-between mb-2">
+    <div className="p-4 sm:p-5 rounded-xl bg-slate-900 border border-slate-800 shadow-sm flex flex-col h-72 sm:h-80">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
         <div>
           <h3 className="text-sm font-bold text-white font-serif">Top Host Nations</h3>
-          <p className="text-xs text-slate-400">Leading destinations for funded technical graduate study</p>
+          <p className="text-[11px] sm:text-xs text-slate-400">Leading destinations for funded technical graduate study</p>
         </div>
-        <span className="text-xs font-mono text-slate-400">
+        <span className="text-[11px] sm:text-xs font-mono text-slate-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800">
           <strong className="text-white">{stats.by_country.length}</strong> Countries
         </span>
       </div>
 
-      <div className="flex-1 w-full mt-2">
+      <div className="flex-1 w-full min-h-0 mt-1">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 15 }}>
+          <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 25 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-            <XAxis dataKey="country" stroke="#64748b" fontSize={10} tickLine={false} interval={0} angle={-20} textAnchor="end" />
-            <YAxis stroke="#64748b" fontSize={11} tickLine={false} />
+            <XAxis
+              dataKey="country"
+              stroke="#64748b"
+              fontSize={9}
+              tickLine={false}
+              interval={0}
+              angle={-25}
+              textAnchor="end"
+            />
+            <YAxis stroke="#64748b" fontSize={10} tickLine={false} />
             <Tooltip
               contentStyle={{
                 backgroundColor: '#06101e',
@@ -129,21 +137,21 @@ export const FundingTypeDistributionChart: React.FC<Props> = ({ stats }) => {
   }));
 
   return (
-    <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 shadow-sm flex flex-col h-80">
+    <div className="p-4 sm:p-5 rounded-xl bg-slate-900 border border-slate-800 shadow-sm flex flex-col h-72 sm:h-80">
       <div className="flex items-center justify-between mb-2">
         <div>
           <h3 className="text-sm font-bold text-white font-serif">Funding Structure Breakdown</h3>
-          <p className="text-xs text-slate-400">Full scholarships vs waivers and stipends</p>
+          <p className="text-[11px] sm:text-xs text-slate-400">Full scholarships vs waivers and stipends</p>
         </div>
       </div>
 
-      <div className="flex-1 w-full">
+      <div className="flex-1 w-full min-h-0">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
               data={data}
-              innerRadius={55}
-              outerRadius={80}
+              innerRadius={45}
+              outerRadius={68}
               paddingAngle={3}
               dataKey="value"
               stroke="#06101e"
@@ -162,7 +170,7 @@ export const FundingTypeDistributionChart: React.FC<Props> = ({ stats }) => {
                 color: '#e2e8f0',
               }}
             />
-            <Legend wrapperStyle={{ fontSize: '11px', color: '#94a3b8' }} />
+            <Legend wrapperStyle={{ fontSize: '10px', color: '#94a3b8' }} />
           </PieChart>
         </ResponsiveContainer>
       </div>
@@ -172,28 +180,35 @@ export const FundingTypeDistributionChart: React.FC<Props> = ({ stats }) => {
 
 export const DegreeLevelDistributionChart: React.FC<Props> = ({ stats }) => {
   const data = (stats.by_degree_level || []).map(item => ({
-    name: item.degree,
+    name:
+      item.degree === 'masters'
+        ? "Master's Only"
+        : item.degree === 'masters_or_phd'
+        ? "Master's or PhD"
+        : item.degree === 'phd'
+        ? 'PhD Only'
+        : item.degree,
     value: item.count,
   }));
 
-  const DEGREE_COLORS = ['#12805c', '#8B5CF6'];
+  const DEGREE_COLORS = ['#12805c', '#8B5CF6', '#F59E0B', '#06B6D4'];
 
   return (
-    <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 shadow-sm flex flex-col h-80">
+    <div className="p-4 sm:p-5 rounded-xl bg-slate-900 border border-slate-800 shadow-sm flex flex-col h-72 sm:h-80">
       <div className="flex items-center justify-between mb-2">
         <div>
           <h3 className="text-sm font-bold text-white font-serif">Degree Level Scope</h3>
-          <p className="text-xs text-slate-400">Master's terminal awards vs direct PhD pipelines</p>
+          <p className="text-[11px] sm:text-xs text-slate-400">Master's terminal awards vs direct PhD pipelines</p>
         </div>
       </div>
 
-      <div className="flex-1 w-full">
+      <div className="flex-1 w-full min-h-0">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
               data={data}
-              innerRadius={50}
-              outerRadius={75}
+              innerRadius={42}
+              outerRadius={65}
               paddingAngle={4}
               dataKey="value"
               stroke="#06101e"
@@ -212,7 +227,7 @@ export const DegreeLevelDistributionChart: React.FC<Props> = ({ stats }) => {
                 color: '#e2e8f0',
               }}
             />
-            <Legend wrapperStyle={{ fontSize: '11px', color: '#94a3b8' }} />
+            <Legend wrapperStyle={{ fontSize: '10px', color: '#94a3b8' }} />
           </PieChart>
         </ResponsiveContainer>
       </div>
@@ -225,26 +240,26 @@ export const StudyFieldDistributionChart: React.FC<Props> = ({ stats }) => {
   const data = (stats.by_field || []).slice(0, 8);
 
   return (
-    <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 shadow-sm flex flex-col h-80">
+    <div className="p-4 sm:p-5 rounded-xl bg-slate-900 border border-slate-800 shadow-sm flex flex-col h-72 sm:h-80">
       <div className="flex items-center justify-between mb-2">
         <div>
-          <h3 className="text-sm font-bold text-white font-serif">Opportunities by Tech Specialization</h3>
-          <p className="text-xs text-slate-400">Distribution across CS, AI, Robotics, VLSI & Cybersecurity</p>
+          <h3 className="text-sm font-bold text-white font-serif">Specialization Distribution</h3>
+          <p className="text-[11px] sm:text-xs text-slate-400">Opportunities across CS, AI, Robotics & Security</p>
         </div>
       </div>
 
-      <div className="flex-1 w-full mt-2">
+      <div className="flex-1 w-full min-h-0 mt-1">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} layout="vertical" margin={{ top: 5, right: 20, left: 30, bottom: 5 }}>
+          <BarChart data={data} layout="vertical" margin={{ top: 5, right: 15, left: 10, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" horizontal={false} />
-            <XAxis type="number" stroke="#64748b" fontSize={10} tickLine={false} />
+            <XAxis type="number" stroke="#64748b" fontSize={9} tickLine={false} />
             <YAxis
               type="category"
               dataKey="field"
               stroke="#64748b"
-              fontSize={10}
+              fontSize={9}
               tickLine={false}
-              width={90}
+              width={82}
             />
             <Tooltip
               contentStyle={{

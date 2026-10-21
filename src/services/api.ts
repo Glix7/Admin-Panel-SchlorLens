@@ -108,6 +108,13 @@ class ApiClient {
     });
   }
 
+  public async archiveRecord(id: string, archive: boolean): Promise<Opportunity> {
+    return this.request<Opportunity>(`/api/records/${id}/archive`, {
+      method: 'PATCH',
+      body: JSON.stringify({ archive }),
+    });
+  }
+
   // Batch CSV Ingest
   public async importCSV(csvContent: string, onDuplicate: 'skip' | 'overwrite'): Promise<{
     imported: number;
@@ -151,6 +158,7 @@ class ApiClient {
   public async resetSeed(): Promise<void> {
     await this.request('/api/admin/reset-seed', {
       method: 'POST',
+      body: JSON.stringify({ confirm: true }),
     });
   }
 }

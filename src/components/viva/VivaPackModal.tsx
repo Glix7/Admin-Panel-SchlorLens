@@ -171,7 +171,8 @@ export const VivaPackModal: React.FC<Props> = ({ isOpen, onClose }) => {
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            className="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+            aria-label="Close guide"
           >
             <X className="w-5 h-5" />
           </button>
@@ -252,7 +253,7 @@ export const VivaPackModal: React.FC<Props> = ({ isOpen, onClose }) => {
         <div className="pt-3 border-t border-slate-800 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-[#12805c] hover:bg-[#0f6b4d] text-white rounded-lg text-xs font-semibold transition"
+            className="min-h-[44px] px-5 py-2.5 bg-[#12805c] hover:bg-[#0f6b4d] text-white rounded-lg text-xs font-semibold transition cursor-pointer"
           >
             Close Viva Defense Pack
           </button>

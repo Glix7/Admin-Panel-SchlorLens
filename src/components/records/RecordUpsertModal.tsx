@@ -179,7 +179,8 @@ export const RecordUpsertModal: React.FC<Props> = ({ isOpen, onClose, onSubmit, 
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+            className="w-11 h-11 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+            aria-label="Close modal"
           >
             <X className="w-5 h-5" />
           </button>
@@ -238,6 +239,7 @@ export const RecordUpsertModal: React.FC<Props> = ({ isOpen, onClose, onSubmit, 
                 <option value="foundation">Foundation</option>
                 <option value="government">Government</option>
                 <option value="corporate">Corporate</option>
+                <option value="ngo">NGO / Non-Profit</option>
               </select>
             </div>
 
@@ -276,6 +278,7 @@ export const RecordUpsertModal: React.FC<Props> = ({ isOpen, onClose, onSubmit, 
               >
                 <option value="masters">Master's Only</option>
                 <option value="masters_or_phd">Master's or PhD</option>
+                <option value="phd">PhD Only</option>
               </select>
             </div>
 
@@ -423,18 +426,18 @@ export const RecordUpsertModal: React.FC<Props> = ({ isOpen, onClose, onSubmit, 
             </label>
           </div>
 
-          <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-3">
+          <div className="pt-3 border-t border-slate-800 flex flex-wrap items-center justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white"
+              className="min-h-[44px] px-4 py-2 text-xs font-medium text-slate-400 hover:text-white transition cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-4 py-2 bg-[#12805c] hover:bg-[#0f6b4d] disabled:opacity-50 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition"
+              className="min-h-[44px] px-4 py-2 bg-[#12805c] hover:bg-[#0f6b4d] disabled:opacity-50 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer"
             >
               <CheckCircle className="w-4 h-4" />
               <span>{isSubmitting ? 'Persisting to Database...' : 'Save Opportunity'}</span>

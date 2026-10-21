@@ -2,10 +2,10 @@ export interface Opportunity {
   id: string; // "opp-lt-001" (long-tail) | "opp-wk-001" (well-known)
   title: string;
   provider_name: string;
-  provider_type: 'university' | 'foundation' | 'government' | 'corporate';
+  provider_type: 'university' | 'foundation' | 'government' | 'corporate' | 'ngo';
   host_country: string; // 25 distinct values in seed
   host_institution: string;
-  degree_level: 'masters' | 'masters_or_phd';
+  degree_level: 'masters' | 'masters_or_phd' | 'phd';
   funding_type: 'full' | 'partial' | 'stipend_only' | 'tuition_waiver' | 'travel_grant';
   funding_summary: string;
   funding_amount_note: string;

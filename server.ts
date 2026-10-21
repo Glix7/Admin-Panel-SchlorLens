@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cookieParser from 'cookie-parser';
 import path from 'path';
-import fs from 'fs';
+import crypto from 'crypto';
 import dotenv from 'dotenv';
 import { db } from './src/server/db';
 import { parseOpportunitiesCSV, exportOpportunitiesToCSV } from './src/lib/csvEngine';
@@ -13,15 +13,37 @@ const app = express();
 const PORT = parseInt(process.env.PORT || '3000', 10);
 const isProd = process.env.NODE_ENV === 'production';
 
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-app.use(cookieParser(process.env.SESSION_SECRET || 'scholar_lens_secret_key_2026'));
+// ==============================================================================
+// 1. Session Secret Validation & Ephemeral Development Secret
+// ==============================================================================
+let sessionSecret = process.env.SESSION_SECRET;
+if (!sessionSecret || sessionSecret.length < 32) {
+  sessionSecret = crypto.randomBytes(32).toString('hex');
+  if (isProd) {
+    console.warn('[SECURITY] No valid SESSION_SECRET provided in production environment (minimum 32 characters required). Generated secure 256-bit ephemeral secret to maintain instance availability.');
+  } else {
+    console.warn('[WARN] No SESSION_SECRET configured in development. Generated ephemeral per-process session secret.');
+  }
+}
 
-// Safe Security Headers
+// ==============================================================================
+// 2. Body Parsers & Security Middleware
+// ==============================================================================
+// Enforce explicit 2MB JSON body size limit
+app.use(express.json({ limit: '2mb' }));
+app.use(express.urlencoded({ extended: true, limit: '2mb' }));
+app.use(cookieParser(sessionSecret));
+
+// Hardened Security Headers
 app.use((_req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' ws: wss:;"
+  );
   next();
 });
 
@@ -61,14 +83,73 @@ const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
     return res.status(401).json({ error: 'Unauthorized: Please sign in.' });
   }
   if (req.user.role !== 'admin') {
-    return res.status(403).json({ error: 'Forbidden: Administrator privileges required for write operations.' });
+    return res.status(403).json({ error: 'Forbidden: Administrator privileges required for this action.' });
   }
   next();
 };
 
-// ==========================================
-// API ROUTES
-// ==========================================
+// ==============================================================================
+// 3. In-Memory Rate Limiting for Login
+// ==============================================================================
+interface RateLimitEntry {
+  count: number;
+  firstAttempt: number;
+  blockedUntil?: number;
+}
+
+const loginRateLimitMap = new Map<string, RateLimitEntry>();
+const MAX_FAILED_ATTEMPTS = 5;
+const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+
+function getRateLimitKey(req: Request, email: string): string {
+  const ip = req.ip || req.socket.remoteAddress || 'unknown-ip';
+  return `${ip}:${email.toLowerCase().trim()}`;
+}
+
+function checkRateLimit(key: string): { allowed: boolean; retryAfterSeconds?: number } {
+  const now = Date.now();
+  const entry = loginRateLimitMap.get(key);
+  if (!entry) return { allowed: true };
+
+  if (entry.blockedUntil && entry.blockedUntil > now) {
+    const retryAfterSeconds = Math.ceil((entry.blockedUntil - now) / 1000);
+    return { allowed: false, retryAfterSeconds };
+  }
+
+  if (now - entry.firstAttempt > RATE_LIMIT_WINDOW_MS) {
+    loginRateLimitMap.delete(key);
+    return { allowed: true };
+  }
+
+  if (entry.count >= MAX_FAILED_ATTEMPTS) {
+    entry.blockedUntil = now + RATE_LIMIT_WINDOW_MS;
+    const retryAfterSeconds = Math.ceil((entry.blockedUntil - now) / 1000);
+    return { allowed: false, retryAfterSeconds };
+  }
+
+  return { allowed: true };
+}
+
+function recordFailedLogin(key: string): void {
+  const now = Date.now();
+  const entry = loginRateLimitMap.get(key);
+  if (!entry || now - entry.firstAttempt > RATE_LIMIT_WINDOW_MS) {
+    loginRateLimitMap.set(key, { count: 1, firstAttempt: now });
+  } else {
+    entry.count += 1;
+    if (entry.count >= MAX_FAILED_ATTEMPTS) {
+      entry.blockedUntil = now + RATE_LIMIT_WINDOW_MS;
+    }
+  }
+}
+
+function clearRateLimit(key: string): void {
+  loginRateLimitMap.delete(key);
+}
+
+// ==============================================================================
+// 4. API ROUTES
+// ==============================================================================
 
 // 1. Auth Endpoints
 app.post('/api/auth/login', (req: Request, res: Response) => {
@@ -77,10 +158,24 @@ app.post('/api/auth/login', (req: Request, res: Response) => {
     return res.status(400).json({ error: 'Email and password are required.' });
   }
 
+  const rateKey = getRateLimitKey(req, email);
+  const rateCheck = checkRateLimit(rateKey);
+  if (!rateCheck.allowed) {
+    return res.status(429).json({
+      error: `Too many failed login attempts. Please try again in ${rateCheck.retryAfterSeconds} seconds.`,
+      retryAfter: rateCheck.retryAfterSeconds,
+    });
+  }
+
   const authResult = db.authenticate(email, password);
   if (!authResult) {
-    return res.status(401).json({ error: 'Invalid email or passphrase. Verify institutional credentials.' });
+    recordFailedLogin(rateKey);
+    db.logActivity(email, 'viewer', 'FAILED_LOGIN', undefined, `Failed login attempt for ${email}`);
+    // Uniform credential failure message to defeat email enumeration
+    return res.status(401).json({ error: 'Invalid institutional credentials. Verify email and password.' });
   }
+
+  clearRateLimit(rateKey);
 
   // Set httpOnly, SameSite=Lax cookie
   res.cookie('scholar_lens_sid', authResult.token, {
@@ -107,8 +202,8 @@ app.get('/api/auth/session', (req: Request, res: Response) => {
   return res.json({ user: req.user || null });
 });
 
-// 2. Records Endpoints (Public read for landing page, admin-only for writes)
-app.get('/api/records', (req: Request, res: Response) => {
+// 2. Records Endpoints (Protected: reads requireAuth, writes requireAdmin)
+app.get('/api/records', requireAuth, (req: Request, res: Response) => {
   try {
     const filters: DataFilterOptions = {
       search: req.query.search as string,
@@ -133,7 +228,7 @@ app.get('/api/records', (req: Request, res: Response) => {
   }
 });
 
-app.get('/api/records/:id', (req: Request, res: Response) => {
+app.get('/api/records/:id', requireAuth, (req: Request, res: Response) => {
   const record = db.getRecord(req.params.id);
   if (!record) {
     return res.status(404).json({ error: `Record '${req.params.id}' not found.` });
@@ -159,24 +254,44 @@ app.put('/api/records/:id', requireAdmin, (req: Request, res: Response) => {
   }
 });
 
+// Soft Delete / Archive / Restore Endpoint
+app.patch('/api/records/:id/archive', requireAdmin, (req: Request, res: Response) => {
+  try {
+    const { archive } = req.body;
+    if (typeof archive !== 'boolean') {
+      return res.status(400).json({ error: 'Body must include boolean "archive" flag.' });
+    }
+    const updated = db.toggleArchiveRecord(req.params.id, archive, req.user!);
+    return res.json(updated);
+  } catch (err: any) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+// Hard Delete Endpoint
 app.delete('/api/records/:id', requireAdmin, (req: Request, res: Response) => {
   try {
     const success = db.deleteRecord(req.params.id, req.user!);
     if (!success) {
       return res.status(404).json({ error: 'Record not found.' });
     }
-    return res.json({ success: true, message: 'Record deleted.' });
+    return res.json({ success: true, message: 'Record permanently deleted.' });
   } catch (err: any) {
     return res.status(400).json({ error: err.message });
   }
 });
 
-// 3. Batch CSV Ingestion & Export
+// 3. Batch CSV Ingestion & Export (Enforce 2 MB server-side limit)
 app.post('/api/records/import', requireAdmin, (req: Request, res: Response) => {
   try {
     const { csvContent, onDuplicate } = req.body;
     if (!csvContent || typeof csvContent !== 'string') {
       return res.status(400).json({ error: 'Missing or invalid csvContent payload.' });
+    }
+
+    // Explicit 2 MB limit check on the server
+    if (Buffer.byteLength(csvContent, 'utf8') > 2 * 1024 * 1024) {
+      return res.status(413).json({ error: 'Payload Too Large: CSV batch exceeds 2 MB limit.' });
     }
 
     const parseResult = parseOpportunitiesCSV(csvContent);
@@ -229,8 +344,8 @@ app.get('/api/records/export', requireAuth, (req: Request, res: Response) => {
   }
 });
 
-// 4. Analytics, Quality & Activity Logs (Public stats, protected quality & logs)
-app.get('/api/stats', (_req: Request, res: Response) => {
+// 4. Analytics, Quality & Activity Logs (All protected by requireAuth)
+app.get('/api/stats', requireAuth, (_req: Request, res: Response) => {
   const stats = db.getStats();
   return res.json(stats);
 });
@@ -246,7 +361,17 @@ app.get('/api/data-quality', requireAuth, (_req: Request, res: Response) => {
   return res.json(report);
 });
 
+// Database Seed Reset (Admin only, disabled in production, requires explicit { confirm: true })
 app.post('/api/admin/reset-seed', requireAdmin, (req: Request, res: Response) => {
+  if (isProd) {
+    return res.status(403).json({ error: 'Forbidden: Database seed reset is disabled in production environment.' });
+  }
+
+  const { confirm } = req.body || {};
+  if (confirm !== true) {
+    return res.status(400).json({ error: 'Bad Request: Explicit confirmation body flag { confirm: true } is required to reset dataset.' });
+  }
+
   try {
     db.resetSeed(req.user!);
     return res.json({ success: true, message: 'Database reset to default 112 seed opportunities.' });
@@ -255,20 +380,14 @@ app.post('/api/admin/reset-seed', requireAdmin, (req: Request, res: Response) =>
   }
 });
 
-// 5. Project Source Code ZIP Download
-app.get('/api/download-project-zip', (_req: Request, res: Response) => {
-  const zipPath = path.resolve(process.cwd(), 'scholar-lens-project.zip');
-  if (fs.existsSync(zipPath)) {
-    res.setHeader('Content-Type', 'application/zip');
-    res.setHeader('Content-Disposition', 'attachment; filename="scholar-lens-project.zip"');
-    return res.sendFile(zipPath);
-  }
-  return res.status(404).json({ error: 'Source code zip archive not found.' });
+// 404 handler for unmatched /api/* routes
+app.all('/api/*', (_req: Request, res: Response) => {
+  return res.status(404).json({ error: 'Endpoint not found.' });
 });
 
-// ==========================================
-// VITE OR STATIC MOUNTING
-// ==========================================
+// ==============================================================================
+// 5. Vite or Static Production File Mounting
+// ==============================================================================
 async function startServer() {
   if (!isProd) {
     const { createServer: createViteServer } = await import('vite');

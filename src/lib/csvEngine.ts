@@ -16,8 +16,8 @@ export const MANDATORY_CSV_HEADERS = [
   'official_url',
 ];
 
-export const VALID_PROVIDER_TYPES = ['university', 'foundation', 'government', 'corporate'];
-export const VALID_DEGREE_LEVELS = ['masters', 'masters_or_phd'];
+export const VALID_PROVIDER_TYPES = ['university', 'foundation', 'government', 'corporate', 'ngo'];
+export const VALID_DEGREE_LEVELS = ['masters', 'masters_or_phd', 'phd'];
 export const VALID_FUNDING_TYPES = ['full', 'partial', 'stipend_only', 'tuition_waiver', 'travel_grant'];
 export const VALID_POPULARITY_TIERS = ['long_tail', 'well_known'];
 

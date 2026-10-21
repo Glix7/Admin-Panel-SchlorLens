@@ -3,16 +3,16 @@
     "id": "usr-admin-001",
     "email": "admin@scholarlens.edu",
     "name": "Lead Curator (Admin)",
-    "passwordHash": "$2b$10$RHQ7dsLqxTTzLAAGrdT6We/JoYwoJdbIOR61l1x4qLi0a8iUm47XW",
+    "passwordHash": "$2b$10$EXAMPLE_HASH_GENERATED_AT_RUNTIME_FROM_ENV",
     "role": "admin",
-    "created_at": "2026-10-19T16:33:26.595Z"
+    "created_at": "2026-01-01T00:00:00.000Z"
   },
   {
     "id": "usr-viewer-001",
     "email": "viewer@scholarlens.edu",
     "name": "Research Analyst (Viewer)",
-    "passwordHash": "$2b$10$nWEZCV86xoRJCQxHEQ3dyOr05gKS2tD6dtWG4G5tqxppSYge6OM5G",
+    "passwordHash": "$2b$10$EXAMPLE_HASH_GENERATED_AT_RUNTIME_FROM_ENV",
     "role": "viewer",
-    "created_at": "2026-10-19T16:33:26.596Z"
+    "created_at": "2026-01-01T00:00:00.000Z"
   }
 ]

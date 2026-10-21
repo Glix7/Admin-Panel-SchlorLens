@@ -15,7 +15,10 @@ coverage/
 
 # Runtime & Active Data
 data/sessions.json
+data/logs.json
+data/users.json
 *.local
+*.zip
 
 # Logs
 npm-debug.log*
