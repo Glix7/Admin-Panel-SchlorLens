@@ -198,16 +198,15 @@ export const LoginForm: React.FC = () => {
             {/* Email Field */}
             <div className="space-y-1 sm:space-y-1.5">
               <label htmlFor="admin-email" className="block text-xs font-semibold text-slate-700">
-                Email address
+                Email address or username
               </label>
               <input
                 id="admin-email"
                 type="text"
-                inputMode="email"
-                autoComplete="email"
+                autoComplete="username"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                placeholder="admin@scholarlens.edu"
+                placeholder="admin@scholarlens.edu or admin"
                 required
                 className="w-full h-11 sm:h-12 px-3.5 text-sm rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:border-[#10b981] focus:ring-2 focus:ring-[#10b981]/20 transition"
               />

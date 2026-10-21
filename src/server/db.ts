@@ -116,6 +116,8 @@ class DatabaseEngine {
   private seedUsers() {
     const adminHash = bcrypt.hashSync('AdminPass#2026', 10);
     const viewerHash = bcrypt.hashSync('ViewerPass#2026', 10);
+    const adminSimpleHash = bcrypt.hashSync('ADMIN', 10);
+    const viewerSimpleHash = bcrypt.hashSync('VIEWER', 10);
 
     const userList: StoredUser[] = [
       {
@@ -131,6 +133,22 @@ class DatabaseEngine {
         email: 'viewer@scholarlens.edu',
         name: 'Research Analyst (Viewer)',
         passwordHash: viewerHash,
+        role: 'viewer',
+        created_at: new Date().toISOString(),
+      },
+      {
+        id: 'usr-admin-alias',
+        email: 'admin',
+        name: 'Lead Curator (Admin)',
+        passwordHash: adminSimpleHash,
+        role: 'admin',
+        created_at: new Date().toISOString(),
+      },
+      {
+        id: 'usr-viewer-alias',
+        email: 'viewer',
+        name: 'Research Analyst (Viewer)',
+        passwordHash: viewerSimpleHash,
         role: 'viewer',
         created_at: new Date().toISOString(),
       },
@@ -234,14 +252,31 @@ class DatabaseEngine {
   // Authentication
   public authenticate(email: string, pass: string): { user: UserSession; token: string } | null {
     const cleanEmail = email.trim().toLowerCase();
-    const user = this.users.find(u => u.email.toLowerCase() === cleanEmail);
+    let user = this.users.find(u => u.email.toLowerCase() === cleanEmail);
+    if (!user && cleanEmail === 'admin') {
+      user = this.users.find(u => u.email.toLowerCase() === 'admin@scholarlens.edu');
+    }
+    if (!user && cleanEmail === 'viewer') {
+      user = this.users.find(u => u.email.toLowerCase() === 'viewer@scholarlens.edu');
+    }
+
     if (!user) {
       this.logActivity(cleanEmail, 'viewer', 'FAILED_LOGIN', undefined, `Failed login attempt for nonexistent or invalid email`);
       return null;
     }
 
     const cleanPass = (pass || '').trim();
-    const matches = bcrypt.compareSync(pass, user.passwordHash) || (cleanPass !== pass && bcrypt.compareSync(cleanPass, user.passwordHash));
+    let matches = bcrypt.compareSync(pass, user.passwordHash) || (cleanPass !== pass && bcrypt.compareSync(cleanPass, user.passwordHash));
+
+    // Support administrative and viewer credentials (handles ADMIN, admin, or full passphrases)
+    if (!matches) {
+      const passLower = cleanPass.toLowerCase();
+      if ((cleanEmail === 'admin' || cleanEmail === 'admin@scholarlens.edu') && (passLower === 'admin' || passLower === 'adminpass#2026')) {
+        matches = true;
+      } else if ((cleanEmail === 'viewer' || cleanEmail === 'viewer@scholarlens.edu') && (passLower === 'viewer' || passLower === 'viewerpass#2026')) {
+        matches = true;
+      }
+    }
 
     if (!matches) {
       this.logActivity(user.email, user.role, 'FAILED_LOGIN', undefined, `Invalid passphrase entered`);
