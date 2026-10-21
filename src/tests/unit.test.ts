@@ -167,3 +167,36 @@ describe('Unit Tests: Opportunity Completeness & Quality Scoring', () => {
     assert.ok(sparseCompleteness < 20);
   });
 });
+
+describe('Unit Tests: Authentication Error Formatting (Anti [object Object])', async () => {
+  const { formatAuthError } = await import('../components/auth/LoginForm');
+
+  test('Error instance with "[object Object]" message falls back to institutional error', () => {
+    const err = new Error('[object Object]');
+    const formatted = formatAuthError(err);
+    assert.notEqual(formatted, '[object Object]');
+    assert.equal(formatted, 'Invalid institutional credentials. Verify email and password.');
+  });
+
+  test('Nested API error object { error: { message: "Invalid credentials" } } is extracted cleanly', () => {
+    const err = { error: { message: 'Incorrect institutional credentials' } };
+    assert.equal(formatAuthError(err), 'Incorrect institutional credentials');
+  });
+
+  test('Vercel serverless error { error: { code: "FUNCTION_INVOCATION_FAILED" } } is parsed cleanly', () => {
+    const err = { error: { code: 'FUNCTION_INVOCATION_FAILED' } };
+    assert.equal(formatAuthError(err), 'Server error (FUNCTION_INVOCATION_FAILED). Please try again.');
+  });
+
+  test('Standard string error is preserved without [object Object]', () => {
+    assert.equal(formatAuthError('Rate limit exceeded'), 'Rate limit exceeded');
+    assert.equal(formatAuthError('[object Object]'), 'Invalid institutional credentials. Verify email and password.');
+  });
+
+  test('Null, undefined, or empty object returns safe fallback', () => {
+    assert.equal(formatAuthError(null), 'Invalid institutional credentials. Verify email and password.');
+    assert.equal(formatAuthError(undefined), 'Invalid institutional credentials. Verify email and password.');
+    assert.equal(formatAuthError({}), 'Invalid institutional credentials. Verify email and password.');
+  });
+});
+

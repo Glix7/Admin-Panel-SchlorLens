@@ -68,6 +68,24 @@ const extractSession = (req: Request, _res: Response, next: NextFunction) => {
   next();
 };
 
+// Normalize routes so /api/* handlers match whether request is /api/auth/login or /auth/login (e.g. Vercel rewrites)
+app.use((req, _res, next) => {
+  if (req.url.startsWith('/api/')) {
+    return next();
+  }
+  if (
+    req.url.startsWith('/auth/') ||
+    req.url.startsWith('/records') ||
+    req.url.startsWith('/stats') ||
+    req.url.startsWith('/activity') ||
+    req.url.startsWith('/data-quality') ||
+    req.url.startsWith('/admin/')
+  ) {
+    req.url = '/api' + req.url;
+  }
+  next();
+});
+
 app.use(extractSession);
 
 // Role Enforcement Middlewares
@@ -153,7 +171,7 @@ function clearRateLimit(key: string): void {
 
 // 1. Auth Endpoints
 app.post('/api/auth/login', (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const { email, password } = req.body || {};
   if (!email || !password) {
     return res.status(400).json({ error: 'Email and password are required.' });
   }
@@ -411,7 +429,13 @@ async function startServer() {
   });
 }
 
-startServer().catch(err => {
-  console.error('Failed to start Scholar Lens server:', err);
-  process.exit(1);
-});
+if (process.env.VERCEL !== '1') {
+  startServer().catch(err => {
+    console.error('Failed to start Scholar Lens server:', err);
+    process.exit(1);
+  });
+}
+
+export { app };
+export default app;
+

@@ -8,6 +8,32 @@ import {
   DataQualityReport,
 } from '../types';
 
+function parseApiErrorMessage(data: any, fallback: string): string {
+  if (!data) return fallback;
+  if (typeof data === 'string') {
+    const trimmed = data.trim();
+    if (trimmed && trimmed !== '[object Object]') return trimmed;
+    return fallback;
+  }
+  if (typeof data.error === 'string') {
+    const trimmed = data.error.trim();
+    if (trimmed && trimmed !== '[object Object]') return trimmed;
+  }
+  if (data.error && typeof data.error === 'object') {
+    if (typeof data.error.message === 'string' && data.error.message.trim()) {
+      return data.error.message.trim();
+    }
+    if (typeof data.error.code === 'string' && data.error.code.trim()) {
+      return `Server Error (${data.error.code.trim()})`;
+    }
+  }
+  if (typeof data.message === 'string') {
+    const trimmed = data.message.trim();
+    if (trimmed && trimmed !== '[object Object]') return trimmed;
+  }
+  return fallback;
+}
+
 class ApiClient {
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const defaultHeaders: Record<string, string> = {
@@ -29,17 +55,17 @@ class ApiClient {
 
     if (response.status === 401) {
       const data = await response.json().catch(() => ({}));
-      throw new Error(data.error || 'Authentication required');
+      throw new Error(parseApiErrorMessage(data, 'Invalid institutional credentials. Verify email and password.'));
     }
 
     if (response.status === 403) {
       const data = await response.json().catch(() => ({}));
-      throw new Error(data.error || 'Forbidden: Administrator privileges required for this action.');
+      throw new Error(parseApiErrorMessage(data, 'Forbidden: Administrator privileges required for this action.'));
     }
 
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));
-      throw new Error(data.error || `Request failed with status ${response.status}`);
+      throw new Error(parseApiErrorMessage(data, `Request failed with status ${response.status}`));
     }
 
     return response.json();

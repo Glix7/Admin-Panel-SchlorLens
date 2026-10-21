@@ -4,6 +4,53 @@ import { AnimatedPixelCanvas } from './AnimatedPixelCanvas';
 import { ScholarLensLogo } from '../common/ScholarLensLogo';
 import { Eye, EyeOff, AlertCircle } from 'lucide-react';
 
+export function formatAuthError(err: unknown): string {
+  if (!err) {
+    return 'Invalid institutional credentials. Verify email and password.';
+  }
+
+  if (typeof err === 'string') {
+    const trimmed = err.trim();
+    if (trimmed && trimmed !== '[object Object]') {
+      return trimmed;
+    }
+    return 'Invalid institutional credentials. Verify email and password.';
+  }
+
+  if (typeof err === 'object') {
+    const anyErr = err as any;
+
+    if (typeof anyErr.message === 'string') {
+      const msg = anyErr.message.trim();
+      if (msg && msg !== '[object Object]') {
+        return msg;
+      }
+    }
+
+    if (typeof anyErr.error === 'string') {
+      const msg = anyErr.error.trim();
+      if (msg && msg !== '[object Object]') {
+        return msg;
+      }
+    }
+
+    if (anyErr.error && typeof anyErr.error === 'object') {
+      if (typeof anyErr.error.message === 'string' && anyErr.error.message.trim()) {
+        return anyErr.error.message.trim();
+      }
+      if (typeof anyErr.error.code === 'string' && anyErr.error.code.trim()) {
+        return `Server error (${anyErr.error.code.trim()}). Please try again.`;
+      }
+    }
+
+    if (typeof anyErr.detail === 'string' && anyErr.detail.trim()) {
+      return anyErr.detail.trim();
+    }
+  }
+
+  return 'Invalid institutional credentials. Verify email and password.';
+}
+
 export const LoginForm: React.FC = () => {
   const { login } = useAuth();
   const [email, setEmail] = useState('');
@@ -31,8 +78,8 @@ export const LoginForm: React.FC = () => {
       setIsSubmitting(true);
       await login(trimmedEmail, password);
       // On success, AuthContext updates isAuthenticated -> App.tsx redirects to Dashboard
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Invalid institutional credentials. Verify email and password.');
+    } catch (err: unknown) {
+      setErrorMsg(formatAuthError(err));
     } finally {
       setIsSubmitting(false);
     }
@@ -208,47 +255,6 @@ export const LoginForm: React.FC = () => {
                 <span>Login</span>
               )}
             </button>
-
-            {/* Demo Credentials Helper */}
-            <div className="pt-2 sm:pt-3 border-t border-slate-100 text-xs text-slate-500 flex flex-col gap-2">
-              <div className="flex items-center justify-between text-[11px] sm:text-xs text-slate-600 font-medium">
-                <span className="font-semibold text-slate-700">1-Click Auto-Fill:</span>
-                <div className="flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    className="px-2.5 py-1 rounded-md bg-emerald-50 text-[#059669] hover:bg-emerald-100 active:bg-emerald-200 font-semibold border border-emerald-200/80 transition cursor-pointer text-xs"
-                    onClick={() => {
-                      setEmail('admin@scholarlens.edu');
-                      setPassword('AdminPass#2026');
-                      setErrorMsg(null);
-                    }}
-                  >
-                    Admin
-                  </button>
-                  <button
-                    type="button"
-                    className="px-2.5 py-1 rounded-md bg-teal-50 text-teal-700 hover:bg-teal-100 active:bg-teal-200 font-semibold border border-teal-200/80 transition cursor-pointer text-xs"
-                    onClick={() => {
-                      setEmail('viewer@scholarlens.edu');
-                      setPassword('ViewerPass#2026');
-                      setErrorMsg(null);
-                    }}
-                  >
-                    Viewer
-                  </button>
-                </div>
-              </div>
-              <div className="bg-slate-50 border border-slate-200/80 rounded-lg p-2 font-mono text-[10px] sm:text-[11px] space-y-1.5 leading-snug">
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-0.5 sm:gap-2">
-                  <span className="font-sans text-slate-500 shrink-0 font-medium">Admin:</span>
-                  <span className="font-semibold text-slate-800 break-all select-all">admin@scholarlens.edu / AdminPass#2026</span>
-                </div>
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-0.5 sm:gap-2 border-t border-slate-200/60 pt-1">
-                  <span className="font-sans text-slate-500 shrink-0 font-medium">Viewer:</span>
-                  <span className="font-semibold text-slate-800 break-all select-all">viewer@scholarlens.edu / ViewerPass#2026</span>
-                </div>
-              </div>
-            </div>
           </form>
         </div>
       </section>

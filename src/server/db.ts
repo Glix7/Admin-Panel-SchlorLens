@@ -42,7 +42,11 @@ class DatabaseEngine {
 
   private init() {
     if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
+      try {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+      } catch {
+        console.warn('Read-only filesystem detected, running with memory persistence.');
+      }
     }
 
     // 1. Load or Initialize Opportunities
@@ -63,6 +67,14 @@ class DatabaseEngine {
       try {
         const raw = fs.readFileSync(USERS_FILE, 'utf-8');
         this.users = JSON.parse(raw);
+        // Safety: If users contain placeholder or corrupted hashes from template files, re-seed with genuine credentials
+        const hasPlaceholder = this.users.some(
+          u => !u.passwordHash || u.passwordHash.includes('EXAMPLE_HASH') || u.passwordHash.length < 20
+        );
+        if (hasPlaceholder) {
+          console.warn('[AUTH] Placeholder hash detected in users file, re-seeding genuine bcrypt credentials.');
+          this.seedUsers();
+        }
       } catch (err) {
         console.error('Failed reading users.json, seeding defaults', err);
         this.seedUsers();
@@ -229,25 +241,13 @@ class DatabaseEngine {
     }
 
     const cleanPass = (pass || '').trim();
-    let matches = bcrypt.compareSync(pass, user.passwordHash) || (cleanPass !== pass && bcrypt.compareSync(cleanPass, user.passwordHash));
-    
-    // Fallback tolerance for demonstration accounts (handles unintentional casing/whitespace)
-    if (!matches) {
-      if (cleanEmail === 'viewer@scholarlens.edu' && cleanPass.toLowerCase() === 'viewerpass#2026') {
-        matches = true;
-      } else if (cleanEmail === 'admin@scholarlens.edu' && cleanPass.toLowerCase() === 'adminpass#2026') {
-        matches = true;
-      } else if (cleanEmail === 'admin' && (cleanPass.toLowerCase() === 'admin' || cleanPass.toLowerCase() === 'adminpass#2026')) {
-        matches = true;
-      }
-    }
+    const matches = bcrypt.compareSync(pass, user.passwordHash) || (cleanPass !== pass && bcrypt.compareSync(cleanPass, user.passwordHash));
 
     if (!matches) {
       this.logActivity(user.email, user.role, 'FAILED_LOGIN', undefined, `Invalid passphrase entered`);
       return null;
     }
 
-    const token = 'sl_sess_' + crypto.randomBytes(32).toString('hex');
     const session: UserSession = {
       id: user.id,
       email: user.email,
@@ -255,6 +255,12 @@ class DatabaseEngine {
       role: user.role,
       created_at: new Date().toISOString(),
     };
+
+    // Stateless signed token payload for serverless environments (Vercel)
+    const payload = Buffer.from(JSON.stringify(session)).toString('base64url');
+    const secret = process.env.SESSION_SECRET || 'scholar-lens-default-secure-secret-2026';
+    const sig = crypto.createHmac('sha256', secret).update(payload).digest('hex');
+    const token = `sl_sess_${payload}.${sig}`;
 
     this.sessions.set(token, session);
     this.persistSessions();
@@ -264,18 +270,48 @@ class DatabaseEngine {
 
   public getSession(token: string): UserSession | null {
     if (!token) return null;
-    return this.sessions.get(token) || null;
+    const inMem = this.sessions.get(token);
+    if (inMem) return inMem;
+
+    // Verify stateless signed token if not in memory (e.g. serverless cold start / multi-lambda instance)
+    if (token.startsWith('sl_sess_') && token.includes('.')) {
+      try {
+        const raw = token.slice('sl_sess_'.length);
+        const [payload, sig] = raw.split('.');
+        if (payload && sig) {
+          const secret = process.env.SESSION_SECRET || 'scholar-lens-default-secure-secret-2026';
+          const expectedSig = crypto.createHmac('sha256', secret).update(payload).digest('hex');
+          if (sig.length === expectedSig.length && crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expectedSig))) {
+            const parsed = JSON.parse(Buffer.from(payload, 'base64url').toString('utf-8'));
+            if (parsed && parsed.email && parsed.role) {
+              const restoredSession: UserSession = {
+                id: parsed.id,
+                email: parsed.email,
+                name: parsed.name,
+                role: parsed.role,
+                created_at: parsed.created_at || new Date().toISOString(),
+              };
+              this.sessions.set(token, restoredSession);
+              return restoredSession;
+            }
+          }
+        }
+      } catch {
+        // Tampered or invalid token
+      }
+    }
+
+    return null;
   }
 
   public destroySession(token: string): boolean {
-    const session = this.sessions.get(token);
+    const session = this.getSession(token);
     if (session) {
       this.logActivity(session.email, session.role, 'LOGOUT', undefined, `Session terminated by user.`);
-      this.sessions.delete(token);
-      this.persistSessions();
-      return true;
     }
-    return false;
+    this.sessions.delete(token);
+    this.persistSessions();
+    return true;
   }
 
   // Records CRUD

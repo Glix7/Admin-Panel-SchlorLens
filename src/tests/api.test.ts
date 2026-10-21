@@ -15,8 +15,21 @@ describe('API & Data Access Layer Integration Tests', () => {
   const viewerSession: UserSession = viewerAuth.user;
 
   test('Authentication: Invalid credentials return null and write failure log', () => {
+    // Valid bcrypt authentication
+    const validAdmin = db.authenticate('admin@scholarlens.edu', 'AdminPass#2026');
+    assert.ok(validAdmin, 'AdminPass#2026 must authenticate successfully');
+    assert.equal(validAdmin.user.role, 'admin');
+
+    const validViewer = db.authenticate('viewer@scholarlens.edu', 'ViewerPass#2026');
+    assert.ok(validViewer, 'ViewerPass#2026 must authenticate successfully');
+    assert.equal(validViewer.user.role, 'viewer');
+
+    // Invalid passwords
     const failedAuth = db.authenticate('admin@scholarlens.edu', 'WrongPass#999');
     assert.equal(failedAuth, null);
+
+    const failedViewer = db.authenticate('viewer@scholarlens.edu', 'WrongPass#999');
+    assert.equal(failedViewer, null);
 
     const nonExistent = db.authenticate('nobody@university.edu', 'SomePass#123');
     assert.equal(nonExistent, null);
